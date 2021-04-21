@@ -89,7 +89,7 @@ namespace Miljector
         {
             processLabel.Text = processLabel.Tag + processComboBox.SelectedItem.ToString();
             //processname = processComboBox.SelectedItem.ToString().Replace(" (x64)", "").Replace(" (x32)", "").Replace(" (x??)", "");
-            Process[] processes = Process.GetProcessesByName(processComboBox.SelectedItem.ToString());//.Replace(" (x64)", "").Replace(" (x32)", "").Replace(" (x??)", ""));
+            Process[] processes = Process.GetProcessesByName(processComboBox.SelectedItem.ToString()); //.Replace(" (x64)", "").Replace(" (x32)", "").Replace(" (x??)", ""));
             foreach (Process process in processes)
             {
                 try
