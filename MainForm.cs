@@ -197,10 +197,10 @@ namespace Miljector
                     // https://api.github.com/repos/EnderIce2/Miljector/releases
                     Root responsed_data = JsonConvert.DeserializeObject<Root>(s.Substring(1, s.Length - 2));
                     github_update_data = responsed_data;
-                    MessageBox.Show(responsed_data.html_url);
-                    MessageBox.Show(responsed_data.tag_name);
                     // TODO: implement a better way to check for updates
-                    if (responsed_data.tag_name.Replace("v", "") == Application.ProductVersion)
+                    Version github_version = new Version(responsed_data.tag_name.Replace("v", ""));
+                    Version current_version = new Version(Application.ProductVersion);
+                    if (github_version != current_version)
                     {
                         infoLabel.Invoke(new Action(() => infoLabel.Text = result[1]));
                         updateClick = true;
