@@ -194,11 +194,12 @@ namespace Miljector
                     Stream data = client.OpenRead("https://api.github.com/repos/EnderIce2/Miljector/releases");
                     StreamReader reader = new StreamReader(data);
                     string s = reader.ReadToEnd();
+                    Debug.WriteLine("RESULT:\n" + s);
                     // https://api.github.com/repos/EnderIce2/Miljector/releases
-                    Root responsed_data = JsonConvert.DeserializeObject<Root>(s.Substring(1, s.Length - 2));
-                    github_update_data = responsed_data;
+                    List<Root> responsed_data = JsonConvert.DeserializeObject<List<Root>>(s);
+                    github_update_data = responsed_data[0];
                     // TODO: implement a better way to check for updates
-                    Version github_version = new Version(responsed_data.tag_name.Replace("v", ""));
+                    Version github_version = new Version(responsed_data[0].tag_name.Replace("v", ""));
                     Version current_version = new Version(Application.ProductVersion);
                     if (github_version != current_version)
                     {
@@ -211,6 +212,7 @@ namespace Miljector
                 catch (Exception ex)
                 {
                     infoLabel.Invoke(new Action(() => infoLabel.Text = $"Error checking for update: {ex.Message}"));
+                    Debug.WriteLine(ex);
                 }
             });
 

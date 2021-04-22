@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -7,12 +8,14 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Miljector
 {
+    [SuppressUnmanagedCodeSecurity]
     public static class InjectHelper
     {
         internal static class NativeMethods
@@ -89,6 +92,7 @@ namespace Miljector
         public static bool InjectLibrary(uint pToBeInjected, string sDllPath)
         {
             IntPtr hndProcess = NativeMethods.OpenProcess(0x2 | 0x8 | 0x10 | 0x20 | 0x400, 1, pToBeInjected);
+            Debug.WriteLine("OpenProcess: " + hndProcess);
             if (hndProcess == INTPTR_ZERO)
             {
                 error_where = "OpenProcess";
@@ -96,6 +100,7 @@ namespace Miljector
                 return false;
             }
             IntPtr lpLLAddress = NativeMethods.GetProcAddress(NativeMethods.GetModuleHandle("kernel32.dll"), "LoadLibraryA");
+            Debug.WriteLine("GetProcAddress: " + lpLLAddress);
             if (lpLLAddress == INTPTR_ZERO)
             {
                 error_where = "GetProcAddress";
@@ -103,6 +108,7 @@ namespace Miljector
                 return false;
             }
             IntPtr lpAddress = NativeMethods.VirtualAllocEx(hndProcess, (IntPtr)null, (IntPtr)sDllPath.Length, 0x1000 | 0x2000, 0X40);
+            Debug.WriteLine("VirtualAllocEx: " + lpAddress);
             if (lpAddress == INTPTR_ZERO)
             {
                 error_where = "VirtualAllocEx";
@@ -111,6 +117,7 @@ namespace Miljector
             }
             byte[] bytes = Encoding.ASCII.GetBytes(sDllPath);
             int res1 = NativeMethods.WriteProcessMemory(hndProcess, lpAddress, bytes, (uint)bytes.Length, 0);
+            Debug.WriteLine("WriteProcessMemory: " + res1);
             if (res1 == 0)
             {
                 error_where = "WriteProcessMemory";
@@ -118,6 +125,7 @@ namespace Miljector
                 return false;
             }
             IntPtr res2 = NativeMethods.CreateRemoteThread(hndProcess, (IntPtr)null, INTPTR_ZERO, lpLLAddress, lpAddress, 0, (IntPtr)null);
+            Debug.WriteLine("CreateRemoteThread: " + res2);
             if (res2 == INTPTR_ZERO)
             {
                 error_where = "CreateRemoteThread";
@@ -189,9 +197,12 @@ namespace Miljector
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
         public class Root
         {
+            [JsonProperty("html_url")]
             public string html_url { get; set; }
+            [JsonProperty("tag_name")]
             public string tag_name { get; set; }
         }
+
         #endregion
     }
 }
