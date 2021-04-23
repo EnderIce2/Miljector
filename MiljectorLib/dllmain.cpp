@@ -152,6 +152,8 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     return TRUE;
 }
 
+// TODO: FIX ACCESS VIOLATION IN        extern "C" DWORD EXPORT Process(char* process_name)
+
 extern "C" DWORD EXPORT Process(char* process_name)
 {
 	cout << "FNC <- Process" << endl;
@@ -169,17 +171,20 @@ extern "C" DWORD EXPORT Process(char* process_name)
 		_JUNK_BLOCK(jmp_label5)
 		char* exeFile;
 		wcstombs(exeFile, ProcEntry.szExeFile, MAX_PATH);
+		cout << "FNC <- Process wcstombs: " << exeFile << " : " << ProcEntry.szExeFile << endl;
 		if (!strcmp(exeFile, process_name))
 		{
 			_JUNK_BLOCK(jmp_label6)
 			DWORD dwPID = ProcEntry.th32ProcessID;
+			cout << "FNC -> Process do loop dwPID: " << dwPID << endl;
 			_JUNK_BLOCK(jmp_label7)
 			CloseHandle(hPID);
 			_JUNK_BLOCK(jmp_label8)
-			cout << "FNC -> Process do loop dwPID: " << dwPID << endl;
+			cout << "FNC -> Process RETURN dwPID: " << dwPID << endl;
 			return dwPID;
 		}
 		_JUNK_BLOCK(jmp_label9)
+		cout << "FNC <- Process end do loop" << endl;
 	}
 	while (Process32Next(hPID, &ProcEntry));
 	_JUNK_BLOCK(jmp_label10)
@@ -196,15 +201,14 @@ extern "C" int EXPORT Inject(char *process_name, LPCWSTR library)
 	_JUNK_BLOCK(jmp_label12)
 	TCHAR  myLibrary[BUFSIZE] = TEXT("");
 	_JUNK_BLOCK(jmp_label13)
-
 	retval = GetFullPathName(library, BUFSIZE, myLibrary, lppPart);
 	if (retval == 0)
 	{
-		printf("GetFullPathName failed (%d)\n", GetLastError());
+		cout << "FNC <- Inject GetFullPathName failed (" << GetLastError() << ")" << endl;
 	}
-
 	_JUNK_BLOCK(jmp_label4)
 	dwProcess = Process(process_name);
+	cout << "FNC <- Inject Process: " << dwProcess << endl;
 	_JUNK_BLOCK(jmp_label15)
 	pBut();
 	yAD();
@@ -212,6 +216,7 @@ extern "C" int EXPORT Inject(char *process_name, LPCWSTR library)
 	LlKk();
 	AfUh();
 	HANDLE hProcess = OpenProcess(PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION, FALSE, dwProcess);
+	cout << "FNC <- Inject OpenProcess: " << hProcess << endl;
 	_JUNK_BLOCK(jmp_label16)
 	xtXP();
 	BNxW();
@@ -219,20 +224,23 @@ extern "C" int EXPORT Inject(char *process_name, LPCWSTR library)
 	Xze();
 	DbL();
 	LPVOID allocatedMem = VirtualAllocEx(hProcess, NULL, sizeof(myLibrary), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	cout << "FNC <- Inject VirtualAllocEx: " << allocatedMem << endl;
 	_JUNK_BLOCK(jmp_label17)
 	dmfc();
 	tXm();
 	dgm();
 	qmY();
 	MYa();
-	WriteProcessMemory(hProcess, allocatedMem, myLibrary, sizeof(myLibrary), NULL);
+	BOOL processMem = WriteProcessMemory(hProcess, allocatedMem, myLibrary, sizeof(myLibrary), NULL);
+	cout << "FNC <- Inject WriteProcessMemory: " << processMem << endl;
 	_JUNK_BLOCK(jmp_label18)
 	gHo();
 	iHj();
 	TNsp();
 	DHaz();
 	SieU();
-	CreateRemoteThread(hProcess, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibrary, allocatedMem, 0, 0);
+	HANDLE remoteThread = CreateRemoteThread(hProcess, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibrary, allocatedMem, 0, 0);
+	cout << "FNC <- Inject CreateRemoteThread: " << remoteThread << endl;
 	_JUNK_BLOCK(jmp_label19)
 	CloseHandle(hProcess);
 	_JUNK_BLOCK(jmp_label20)

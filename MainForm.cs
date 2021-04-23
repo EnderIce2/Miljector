@@ -49,6 +49,9 @@ namespace Miljector
                 injectButton.Invoke(new Action(() => injectButton.Enabled = false));
                 processComboBox.Invoke(new Action(() => processComboBox.Enabled = false));
                 refreshLinkLabel.Invoke(new Action(() => refreshLinkLabel.Enabled = false));
+                aboutLinkLabel.Invoke(new Action(() => aboutLinkLabel.Enabled = false));
+                settingsLinkLabel.Invoke(new Action(() => settingsLinkLabel.Enabled = false));
+                infoLabel.Invoke(new Action(() => infoLabel.Enabled = false));
                 processComboBox.Invoke(new Action(() => processComboBox.Items.Clear()));
                 Process[] processes = Process.GetProcesses();
                 foreach (Process p in processes)
@@ -91,6 +94,9 @@ namespace Miljector
                 injectButton.Invoke(new Action(() => injectButton.Enabled = true));
                 processComboBox.Invoke(new Action(() => processComboBox.Enabled = true));
                 refreshLinkLabel.Invoke(new Action(() => refreshLinkLabel.Enabled = true));
+                aboutLinkLabel.Invoke(new Action(() => aboutLinkLabel.Enabled = true));
+                settingsLinkLabel.Invoke(new Action(() => settingsLinkLabel.Enabled = true));
+                infoLabel.Invoke(new Action(() => infoLabel.Enabled = true));
             });
             loadingForm.Hide();
         }
@@ -214,6 +220,9 @@ namespace Miljector
                 injectButton.Invoke(new Action(() => injectButton.Enabled = false));
                 processComboBox.Invoke(new Action(() => processComboBox.Enabled = false));
                 refreshLinkLabel.Invoke(new Action(() => refreshLinkLabel.Enabled = false));
+                aboutLinkLabel.Invoke(new Action(() => aboutLinkLabel.Enabled = false));
+                settingsLinkLabel.Invoke(new Action(() => settingsLinkLabel.Enabled = false));
+                infoLabel.Invoke(new Action(() => infoLabel.Enabled = false));
                 processComboBox.Invoke(new Action(() => processComboBox.Items.Clear()));
 
                 if (!IsWine())
@@ -324,6 +333,9 @@ namespace Miljector
                 injectButton.Invoke(new Action(() => injectButton.Enabled = true));
                 processComboBox.Invoke(new Action(() => processComboBox.Enabled = true));
                 refreshLinkLabel.Invoke(new Action(() => refreshLinkLabel.Enabled = true));
+                aboutLinkLabel.Invoke(new Action(() => aboutLinkLabel.Enabled = true));
+                settingsLinkLabel.Invoke(new Action(() => settingsLinkLabel.Enabled = true));
+                infoLabel.Invoke(new Action(() => infoLabel.Enabled = true));
             });
             loadingForm.Hide();
         }
