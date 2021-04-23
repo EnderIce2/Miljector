@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace MiljectorHelper
 {
-    class Program
+    internal class Program
     {
         public static bool IsAdministrator => new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
 
@@ -19,7 +15,7 @@ namespace MiljectorHelper
         [DllImport("MiljectorLib.dll")]
         internal static extern uint Inject(string process_name, string library);
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             if (!IsAdministrator)
             {
