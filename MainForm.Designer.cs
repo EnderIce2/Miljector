@@ -39,6 +39,7 @@ namespace Miljector
             this.aboutLinkLabel = new System.Windows.Forms.LinkLabel();
             this.processPictureBox = new System.Windows.Forms.PictureBox();
             this.DLLFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.settingsLinkLabel = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.processPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -145,11 +146,26 @@ namespace Miljector
             this.DLLFileDialog.Filter = "DLL files|*.dll";
             this.DLLFileDialog.Title = "DLL";
             // 
+            // settingsLinkLabel
+            // 
+            this.settingsLinkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.settingsLinkLabel.AutoSize = true;
+            this.settingsLinkLabel.LinkColor = System.Drawing.Color.DeepSkyBlue;
+            this.settingsLinkLabel.Location = new System.Drawing.Point(12, 25);
+            this.settingsLinkLabel.Name = "settingsLinkLabel";
+            this.settingsLinkLabel.Size = new System.Drawing.Size(50, 16);
+            this.settingsLinkLabel.TabIndex = 9;
+            this.settingsLinkLabel.TabStop = true;
+            this.settingsLinkLabel.Text = "Settings";
+            this.settingsLinkLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.settingsLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.SettingsLinkLabel_LinkClicked);
+            // 
             // MainForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.ClientSize = new System.Drawing.Size(384, 161);
+            this.Controls.Add(this.settingsLinkLabel);
             this.Controls.Add(this.processPictureBox);
             this.Controls.Add(this.aboutLinkLabel);
             this.Controls.Add(this.refreshLinkLabel);
@@ -168,6 +184,7 @@ namespace Miljector
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Miljector";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.processPictureBox)).EndInit();
             this.ResumeLayout(false);
@@ -186,6 +203,7 @@ namespace Miljector
         private System.Windows.Forms.LinkLabel aboutLinkLabel;
         private System.Windows.Forms.PictureBox processPictureBox;
         private System.Windows.Forms.OpenFileDialog DLLFileDialog;
+        private System.Windows.Forms.LinkLabel settingsLinkLabel;
     }
 }
 

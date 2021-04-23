@@ -43,12 +43,12 @@ namespace Miljector
         }
 
         private static readonly IntPtr INTPTR_ZERO = (IntPtr)0;
-        private static int processId;
-        public static int pid;
 
         #region Injection
         public static string AttachProcess(string patch)
         {
+            int processId;
+            int pid;
             Process[] processes = Process.GetProcessesByName(MainForm.processname);
             if (processes.Length == 0)
             {
@@ -83,7 +83,10 @@ namespace Miljector
             if (!InjectLibrary(_proccessId, sDllPath))
             {
                 if (error_code == INTPTR_ZERO && error_where == "OpenProcess")
+                {
                     MessageBox.Show("OpenProcess returned 0, something went wrong...\nYou can try again but this time run as administrator the injector!", "Injection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
                 return $"Injection Failed ({error_code} at {error_where})";
             }
             return $"Success ({MainForm.processname})";
@@ -138,9 +141,9 @@ namespace Miljector
         #endregion
 
         #region Compatibility
-        public static string wine_name;
         public static bool IsWine()
         {
+            string wine_name;
             try
             {
                 wine_name = NativeMethods.Wine_get_version();
@@ -151,6 +154,7 @@ namespace Miljector
             catch (Exception) { return false; }
             return true;
         }
+
         public static bool IsMono()
         {
             return Type.GetType("Mono.Runtime") != null;
@@ -163,9 +167,13 @@ namespace Miljector
             if (IntPtr.Size == 4)
                 return false;
             else if (IntPtr.Size == 8)
+            {
                 if ((Environment.OSVersion.Version.Major > 5) || ((Environment.OSVersion.Version.Major == 5) && (Environment.OSVersion.Version.Minor >= 1)))
+                {
                     return NativeMethods.IsWow64Process(process.Handle, out bool retVal) && retVal;
-                return false;
+                }
+            }
+            return false;
         }
         #endregion
 

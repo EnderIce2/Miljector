@@ -12,6 +12,21 @@
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -41,6 +56,15 @@
   <PropertyGroup>
     <StartupObject>Miljector.Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -64,6 +88,62 @@
     <Compile Include="AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DiscordAPI\Configuration.cs" />
+    <Compile Include="DiscordAPI\Converters\EnumSnakeCaseConverter.cs" />
+    <Compile Include="DiscordAPI\Converters\EnumValueAttribute.cs" />
+    <Compile Include="DiscordAPI\DiscordRpcClient.cs" />
+    <Compile Include="DiscordAPI\Events.cs" />
+    <Compile Include="DiscordAPI\EventType.cs" />
+    <Compile Include="DiscordAPI\Exceptions\BadPresenceException.cs" />
+    <Compile Include="DiscordAPI\Exceptions\InvalidConfigurationException.cs" />
+    <Compile Include="DiscordAPI\Exceptions\InvalidPipeException.cs" />
+    <Compile Include="DiscordAPI\Exceptions\StringOutOfRangeException.cs" />
+    <Compile Include="DiscordAPI\Exceptions\UninitializedException.cs" />
+    <Compile Include="DiscordAPI\Helper\BackoffDelay.cs" />
+    <Compile Include="DiscordAPI\Helper\StringTools.cs" />
+    <Compile Include="DiscordAPI\IO\Handshake.cs" />
+    <Compile Include="DiscordAPI\IO\INamedPipeClient.cs" />
+    <Compile Include="DiscordAPI\IO\ManagedNamedPipeClient.cs" />
+    <Compile Include="DiscordAPI\IO\Opcode.cs" />
+    <Compile Include="DiscordAPI\IO\PipeFrame.cs" />
+    <Compile Include="DiscordAPI\Logging\ConsoleLogger.cs" />
+    <Compile Include="DiscordAPI\Logging\FileLogger.cs" />
+    <Compile Include="DiscordAPI\Logging\ILogger.cs" />
+    <Compile Include="DiscordAPI\Logging\LogLevel.cs" />
+    <Compile Include="DiscordAPI\Logging\NullLogger.cs" />
+    <Compile Include="DiscordAPI\Message\CloseMessage.cs" />
+    <Compile Include="DiscordAPI\Message\ConnectionEstablishedMessage.cs" />
+    <Compile Include="DiscordAPI\Message\ConnectionFailedMessage.cs" />
+    <Compile Include="DiscordAPI\Message\ErrorMessage.cs" />
+    <Compile Include="DiscordAPI\Message\IMessage.cs" />
+    <Compile Include="DiscordAPI\Message\JoinMessage.cs" />
+    <Compile Include="DiscordAPI\Message\JoinRequestMessage.cs" />
+    <Compile Include="DiscordAPI\Message\MessageType.cs" />
+    <Compile Include="DiscordAPI\Message\PresenceMessage.cs" />
+    <Compile Include="DiscordAPI\Message\ReadyMessage.cs" />
+    <Compile Include="DiscordAPI\Message\SpectateMessage.cs" />
+    <Compile Include="DiscordAPI\Message\SubscribeMessage.cs" />
+    <Compile Include="DiscordAPI\Message\UnsubscribeMsesage.cs" />
+    <Compile Include="DiscordAPI\Registry\IUriSchemeCreator.cs" />
+    <Compile Include="DiscordAPI\Registry\MacUriSchemeCreator.cs" />
+    <Compile Include="DiscordAPI\Registry\UnixUriSchemeCreator.cs" />
+    <Compile Include="DiscordAPI\Registry\UriScheme.cs" />
+    <Compile Include="DiscordAPI\Registry\WindowsUriSchemeCreator.cs" />
+    <Compile Include="DiscordAPI\RichPresence.cs" />
+    <Compile Include="DiscordAPI\RPC\Commands\CloseCommand.cs" />
+    <Compile Include="DiscordAPI\RPC\Commands\ICommand.cs" />
+    <Compile Include="DiscordAPI\RPC\Commands\PresenceCommand.cs" />
+    <Compile Include="DiscordAPI\RPC\Commands\RespondCommand.cs" />
+    <Compile Include="DiscordAPI\RPC\Commands\SubscribeCommand.cs" />
+    <Compile Include="DiscordAPI\RPC\Payload\ClosePayload.cs" />
+    <Compile Include="DiscordAPI\RPC\Payload\Command.cs" />
+    <Compile Include="DiscordAPI\RPC\Payload\IPayload.cs" />
+    <Compile Include="DiscordAPI\RPC\Payload\PayloadArgument.cs" />
+    <Compile Include="DiscordAPI\RPC\Payload\PayloadEvent.cs" />
+    <Compile Include="DiscordAPI\RPC\Payload\ServerEvent.cs" />
+    <Compile Include="DiscordAPI\RPC\RpcConnection.cs" />
+    <Compile Include="DiscordAPI\User.cs" />
+    <Compile Include="DiscordAPI\Web\WebRPC.cs" />
     <Compile Include="InjectHelper.cs" />
     <Compile Include="LoadingForm.cs">
       <SubType>Form</SubType>
@@ -79,6 +159,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SettingsForm.Designer.cs">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AboutForm.de.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -125,7 +211,11 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SettingsForm.resx">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -140,7 +230,20 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DiscordAPI\LICENSE.txt" />
     <Content Include="Miljector-icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

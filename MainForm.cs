@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using DiscordRPC;
+using DiscordRPC.Logging;
+using Miljector.Properties;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Miljector.InjectHelper;
@@ -17,8 +21,9 @@ namespace Miljector
 {
     public partial class MainForm : Form
     {
-        public static string dllpath = null;
-        public static string processname = null;
+        // TODO: 32 and 64 bit manually switching of this application
+        public static string dllpath;
+        public static string processname;
         readonly LoadingForm loadingForm = new LoadingForm();
         public MainForm()
         {
@@ -28,6 +33,11 @@ namespace Miljector
         private void AboutLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             new AboutForm().ShowDialog();
+        }
+
+        private void SettingsLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            new SettingsForm().ShowDialog();
         }
 
         private async void RefreshLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -163,77 +173,127 @@ namespace Miljector
             }
             await Task.Run(() =>
             {
-                infoLabel.Invoke(new Action(() => infoLabel.Text = AttachProcess(dllpath)));
+                try
+                {
+                    if (Settings.Default.UseAlternativeInjection)
+                    {
+                        Process helper = new Process();
+                        helper.StartInfo.FileName = "MiljectorHelper.exe";
+                        helper.StartInfo.Arguments = "\"" + processname + "\" \"" + dllpath;
+                        helper.StartInfo.Verb = "runas";
+                        helper.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
+                        helper.Start();
+                        helper.WaitForExit();
+                        Thread.Sleep(200);
+                        infoLabel.Invoke(new Action(() => infoLabel.Text = helper.ExitCode.ToString()));
+                    }
+                    else
+                        infoLabel.Invoke(new Action(() => infoLabel.Text = AttachProcess(dllpath)));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                    infoLabel.Invoke(new Action(() => infoLabel.Text = "Error: " + ex.Message));
+                }
             });
         }
 
         bool updateClick = false;
         Root github_update_data;
-        private async void MainForm_Load(object sender, EventArgs e)
+        public DiscordRpcClient client;
+        private async void MainForm_Load(object sender_, EventArgs e_)
         {
             loadingForm.Show();
             /* if (IsMono())
             {
                 MessageBox.Show("Platform not supported!");
             } */
-            IsWine();
-
             await Task.Run(() =>
             {
-                string[] result = ((string)infoLabel.Tag).Split(new string[] { " {|} " }, StringSplitOptions.None);
-                // 0 = up to date | 1 = out of date
+                browseDLLButton.Invoke(new Action(() => browseDLLButton.Enabled = false));
+                injectButton.Invoke(new Action(() => injectButton.Enabled = false));
+                processComboBox.Invoke(new Action(() => processComboBox.Enabled = false));
+                refreshLinkLabel.Invoke(new Action(() => refreshLinkLabel.Enabled = false));
+                processComboBox.Invoke(new Action(() => processComboBox.Items.Clear()));
 
-                WebClient client = new WebClient();
-
-                client.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-
-                ServicePointManager.Expect100Continue = true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                try
+                if (!IsWine())
                 {
-                    Stream data = client.OpenRead("https://api.github.com/repos/EnderIce2/Miljector/releases");
-                    StreamReader reader = new StreamReader(data);
-                    string s = reader.ReadToEnd();
-                    Debug.WriteLine("RESULT:\n" + s);
-                    // https://api.github.com/repos/EnderIce2/Miljector/releases
-                    List<Root> responsed_data = JsonConvert.DeserializeObject<List<Root>>(s);
-                    github_update_data = responsed_data[0];
-                    // TODO: implement a better way to check for updates
-                    Version github_version = new Version(responsed_data[0].tag_name.Replace("v", ""));
-                    Version current_version = new Version(Application.ProductVersion);
-                    if (github_version != current_version)
+                    if (Settings.Default.EnableDiscordRPC)
                     {
-                        infoLabel.Invoke(new Action(() => infoLabel.Text = result[1]));
-                        updateClick = true;
+                        client = new DiscordRpcClient("834927430145277992")
+                        {
+                            Logger = new ConsoleLogger() { Level = LogLevel.Warning }
+                        };
+                        client.OnReady += (sender, e) =>
+                        {
+                            Console.WriteLine("-> Ready from user {0}", e.User.Username);
+                        };
+                        client.OnPresenceUpdate += (sender, e) =>
+                        {
+                            Console.WriteLine("-> Update {0}", e.Presence);
+                        };
+                        client.Initialize();
+                        client.SetPresence(new RichPresence()
+                        {
+                            Details = "v" + Application.ProductVersion,
+                            State = "https://github.com/EnderIce2/Miljector",
+                            Assets = new Assets()
+                            {
+                                LargeImageKey = "image_large",
+                                LargeImageText = "Miljector v" + Application.ProductVersion,
+                                SmallImageKey = "image_small",
+                                SmallImageText = "EnderIce2"
+                            }
+                        });
                     }
-                    else
-                        infoLabel.Invoke(new Action(() => infoLabel.Text = result[0]));
                 }
-                catch (Exception ex)
-                {
-                    infoLabel.Invoke(new Action(() => infoLabel.Text = $"Error checking for update: {ex.Message}"));
-                    Debug.WriteLine(ex);
-                }
-            });
 
-            await Task.Run(() =>
-        {
-            browseDLLButton.Invoke(new Action(() => browseDLLButton.Enabled = false));
-            injectButton.Invoke(new Action(() => injectButton.Enabled = false));
-            processComboBox.Invoke(new Action(() => processComboBox.Enabled = false));
-            refreshLinkLabel.Invoke(new Action(() => refreshLinkLabel.Enabled = false));
-            processComboBox.Invoke(new Action(() => processComboBox.Items.Clear()));
-            Process[] processes = Process.GetProcesses();
-            foreach (Process p in processes)
-            {
-                if (p.MainWindowHandle == IntPtr.Zero)
+                if (Settings.Default.CheckForUpdates)
                 {
-                    continue;
-                }
-                if (!string.IsNullOrEmpty(p.ProcessName))
-                {
-                    processComboBox.Invoke(new Action(() =>
+                    // 0 = up to date | 1 = out of date
+                    string[] result = ((string)infoLabel.Tag).Split(new string[] { " {|} " }, StringSplitOptions.None);
+                    WebClient client = new WebClient();
+                    client.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+                    ServicePointManager.Expect100Continue = true;
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                    try
                     {
+                        Stream data = client.OpenRead("https://api.github.com/repos/EnderIce2/Miljector/releases");
+                        StreamReader reader = new StreamReader(data);
+                        string s = reader.ReadToEnd();
+                        Debug.WriteLine("RESULT:\n" + s);
+                        // https://api.github.com/repos/EnderIce2/Miljector/releases
+                        List<Root> responsed_data = JsonConvert.DeserializeObject<List<Root>>(s);
+                        github_update_data = responsed_data[0];
+                        // TODO: implement a better way to check for updates
+                        Version github_version = new Version(responsed_data[0].tag_name.Replace("v", ""));
+                        Version current_version = new Version(Application.ProductVersion);
+                        if (github_version != current_version)
+                        {
+                            infoLabel.Invoke(new Action(() => infoLabel.Text = result[1]));
+                            updateClick = true;
+                        }
+                        else
+                            infoLabel.Invoke(new Action(() => infoLabel.Text = result[0]));
+                    }
+                    catch (Exception ex)
+                    {
+                        infoLabel.Invoke(new Action(() => infoLabel.Text = $"Error checking for update: {ex.Message}"));
+                        Debug.WriteLine(ex);
+                    }
+                }
+
+                Process[] processes = Process.GetProcesses();
+                foreach (Process p in processes)
+                {
+                    if (p.MainWindowHandle == IntPtr.Zero)
+                    {
+                        continue;
+                    }
+                    if (!string.IsNullOrEmpty(p.ProcessName))
+                    {
+                        processComboBox.Invoke(new Action(() =>
+                        {
                         /* string x32or64 = "(x??)";
                         try
                         {
@@ -256,21 +316,31 @@ namespace Miljector
                         {
                             // TODO: implement
                         } */
-                        processComboBox.Items.Add(p.ProcessName);
-                    }));
+                            processComboBox.Items.Add(p.ProcessName);
+                        }));
+                    }
                 }
-            }
-            browseDLLButton.Invoke(new Action(() => browseDLLButton.Enabled = true));
-            injectButton.Invoke(new Action(() => injectButton.Enabled = true));
-            processComboBox.Invoke(new Action(() => processComboBox.Enabled = true));
-            refreshLinkLabel.Invoke(new Action(() => refreshLinkLabel.Enabled = true));
-        });
+                browseDLLButton.Invoke(new Action(() => browseDLLButton.Enabled = true));
+                injectButton.Invoke(new Action(() => injectButton.Enabled = true));
+                processComboBox.Invoke(new Action(() => processComboBox.Enabled = true));
+                refreshLinkLabel.Invoke(new Action(() => refreshLinkLabel.Enabled = true));
+            });
             loadingForm.Hide();
         }
         private void InfoLabel_Click(object sender, EventArgs e)
         {
             if (updateClick)
                 Process.Start(github_update_data.html_url);
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            try
+            {
+                client.Dispose();
+            }
+            catch (NullReferenceException)
+            { }
         }
     }
 }
