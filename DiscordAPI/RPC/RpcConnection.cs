@@ -127,8 +127,8 @@ namespace DiscordRPC.RPC
 			this.applicationID = applicationID;
 			this.processID = processID;
 			this.targetPipe = targetPipe;
-			this.namedPipe = client;
-			this.ShutdownOnly = true;
+			namedPipe = client;
+			ShutdownOnly = true;
 
 			//Assign a default logger
 			Logger = new ConsoleLogger();

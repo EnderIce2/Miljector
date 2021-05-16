@@ -89,35 +89,35 @@ namespace DiscordRPC
         {
             return new RichPresence
             {
-                State = this._state != null ? _state.Clone() as string : null,
-                Details = this._details != null ? _details.Clone() as string : null,
+                State = _state != null ? _state.Clone() as string : null,
+                Details = _details != null ? _details.Clone() as string : null,
 
                 Secrets = !HasSecrets() ? null : new Secrets
                 {
                     //MatchSecret = this.Secrets.MatchSecret?.Clone() as string,
-                    JoinSecret = this.Secrets.JoinSecret != null ? this.Secrets.JoinSecret.Clone() as string : null,
-                    SpectateSecret = this.Secrets.SpectateSecret != null ? this.Secrets.SpectateSecret.Clone() as string : null
+                    JoinSecret = Secrets.JoinSecret != null ? Secrets.JoinSecret.Clone() as string : null,
+                    SpectateSecret = Secrets.SpectateSecret != null ? Secrets.SpectateSecret.Clone() as string : null
                 },
 
                 Timestamps = !HasTimestamps() ? null : new Timestamps
                 {
-                    Start = this.Timestamps.Start,
-                    End = this.Timestamps.End
+                    Start = Timestamps.Start,
+                    End = Timestamps.End
                 },
 
                 Assets = !HasAssets() ? null : new Assets
                 {
-                    LargeImageKey = this.Assets.LargeImageKey != null ? this.Assets.LargeImageKey.Clone() as string : null,
-                    LargeImageText = this.Assets.LargeImageText != null ? this.Assets.LargeImageText.Clone() as string : null,
-                    SmallImageKey = this.Assets.SmallImageKey != null ? this.Assets.SmallImageKey.Clone() as string : null,
-                    SmallImageText = this.Assets.SmallImageText != null ? this.Assets.SmallImageText.Clone() as string : null
+                    LargeImageKey = Assets.LargeImageKey != null ? Assets.LargeImageKey.Clone() as string : null,
+                    LargeImageText = Assets.LargeImageText != null ? Assets.LargeImageText.Clone() as string : null,
+                    SmallImageKey = Assets.SmallImageKey != null ? Assets.SmallImageKey.Clone() as string : null,
+                    SmallImageText = Assets.SmallImageText != null ? Assets.SmallImageText.Clone() as string : null
                 },
 
                 Party = !HasParty() ? null : new Party
                 {
-                    ID = this.Party.ID,
-                    Size = this.Party.Size,
-                    Max = this.Party.Max
+                    ID = Party.ID,
+                    Size = Party.Size,
+                    Max = Party.Max
                 }
             };
         }
@@ -128,31 +128,31 @@ namespace DiscordRPC
         /// <param name="presence"></param>
         internal void Merge(RichPresence presence)
         {
-            this._state = presence._state;
-            this._details = presence._details;
-            this.Party = presence.Party;
-            this.Timestamps = presence.Timestamps;
-            this.Secrets = presence.Secrets;
+            _state = presence._state;
+            _details = presence._details;
+            Party = presence.Party;
+            Timestamps = presence.Timestamps;
+            Secrets = presence.Secrets;
 
             //If they have assets, we should merge them
             if (presence.HasAssets())
             {
                 //Make sure we actually have assets too
-                if (!this.HasAssets())
+                if (!HasAssets())
                 {
                     //We dont, so we will just use theirs
-                    this.Assets = presence.Assets;
+                    Assets = presence.Assets;
                 }
                 else
                 {
                     //We do, so we better merge them!
-                    this.Assets.Merge(presence.Assets);
+                    Assets.Merge(presence.Assets);
                 }
             }
             else
             {
                 //They dont have assets, so we will just set ours to null
-                this.Assets = null;
+                Assets = null;
             }
         }
 
@@ -165,20 +165,20 @@ namespace DiscordRPC
         {
             if (presence == null) return;
 
-            this._state = presence._state ?? this._state;
-            this._details = presence._details ?? this._details;
+            _state = presence._state ?? _state;
+            _details = presence._details ?? _details;
 
             if (presence.Party != null)
             {
-                if (this.Party != null)
+                if (Party != null)
                 {
-                    this.Party.ID = presence.Party.ID ?? this.Party.ID;
-                    this.Party.Size = presence.Party.Size;
-                    this.Party.Max = presence.Party.Max;
+                    Party.ID = presence.Party.ID ?? Party.ID;
+                    Party.Size = presence.Party.Size;
+                    Party.Max = presence.Party.Max;
                 }
                 else
                 {
-                    this.Party = presence.Party;
+                    Party = presence.Party;
                 }
             }
         }
@@ -190,7 +190,7 @@ namespace DiscordRPC
         /// <returns></returns>
         public bool HasTimestamps()
         {
-            return this.Timestamps != null && (Timestamps.Start != null || Timestamps.End != null);
+            return Timestamps != null && (Timestamps.Start != null || Timestamps.End != null);
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace DiscordRPC
         /// <returns></returns>
         public bool HasAssets()
         {
-            return this.Assets != null;
+            return Assets != null;
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace DiscordRPC
         /// <returns></returns>
         public bool HasParty()
         {
-            return this.Party != null && this.Party.ID != null;
+            return Party != null && Party.ID != null;
         }
 
         /// <summary>

@@ -181,7 +181,12 @@ namespace Miljector
             {
                 try
                 {
-                    if (Settings.Default.UseAlternativeInjection)
+                    if (Settings.Default.UseGen2Injection)
+                    {
+                        new Mapping((Process.GetProcessesByName(processname) as IEnumerable<Process>).FirstOrDefault()).Inject(File.ReadAllBytes(dllpath));
+                        infoLabel.Invoke(new Action(() => infoLabel.Text = "Injected"));
+                    }
+                    else if (Settings.Default.UseAlternativeInjection)
                     {
                         Process helper = new Process();
                         helper.StartInfo.FileName = "MiljectorHelper.exe";

@@ -16,6 +16,8 @@ namespace Miljector
         public SettingsForm()
         {
             InitializeComponent();
+            if (Settings.Default.UseGen2Injection)
+                Gen2InjectionCheckBox.Checked = true;
             if (Settings.Default.UseAlternativeInjection)
                 useAlternativeInjectionCheckBox.Checked = true;
             if (Settings.Default.CheckForUpdates)
@@ -27,7 +29,15 @@ namespace Miljector
         private void OkButton_Click(object sender, EventArgs e)
         {
             Settings.Default.Save();
-            this.Close();
+            Close();
+        }
+
+        private void Gen2InjectionCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (Gen2InjectionCheckBox.Checked)
+                Settings.Default.UseGen2Injection = true;
+            else
+                Settings.Default.UseGen2Injection = false;
         }
 
         private void UseAlternativeInjectionCheckBox_CheckedChanged(object sender, EventArgs e)

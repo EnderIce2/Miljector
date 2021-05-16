@@ -58,7 +58,7 @@ namespace DiscordRPC
             get { return _logger; }
             set
             {
-                this._logger = value;
+                _logger = value;
                 if (connection != null) connection.Logger = value;
             }
         }
@@ -462,7 +462,7 @@ namespace DiscordRPC
             {
                 //Clear the presence
                 if (!SkipIdenticalPresence || CurrentPresence != null)
-                    connection.EnqueueCommand(new PresenceCommand() { PID = this.ProcessID, Presence = null });
+                    connection.EnqueueCommand(new PresenceCommand() { PID = ProcessID, Presence = null });
             }
             else
             {
@@ -479,7 +479,7 @@ namespace DiscordRPC
 
                 //Send the presence, but only if we are not skipping
                 if (!SkipIdenticalPresence || !presence.Matches(CurrentPresence))
-                    connection.EnqueueCommand(new PresenceCommand() { PID = this.ProcessID, Presence = presence.Clone() });
+                    connection.EnqueueCommand(new PresenceCommand() { PID = ProcessID, Presence = presence.Clone() });
             }
 
             //Update our local store

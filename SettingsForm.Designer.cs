@@ -33,16 +33,17 @@ namespace Miljector
             this.okButton = new System.Windows.Forms.Button();
             this.checkForUpdatesCheckBox = new System.Windows.Forms.CheckBox();
             this.enableDiscordRPCStatusCheckBox = new System.Windows.Forms.CheckBox();
+            this.Gen2InjectionCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // useAlternativeInjectionCheckBox
             // 
             this.useAlternativeInjectionCheckBox.AutoSize = true;
-            this.useAlternativeInjectionCheckBox.Location = new System.Drawing.Point(12, 12);
+            this.useAlternativeInjectionCheckBox.Location = new System.Drawing.Point(12, 35);
             this.useAlternativeInjectionCheckBox.Name = "useAlternativeInjectionCheckBox";
-            this.useAlternativeInjectionCheckBox.Size = new System.Drawing.Size(141, 17);
+            this.useAlternativeInjectionCheckBox.Size = new System.Drawing.Size(204, 17);
             this.useAlternativeInjectionCheckBox.TabIndex = 0;
-            this.useAlternativeInjectionCheckBox.Text = "Use Alternative Injection";
+            this.useAlternativeInjectionCheckBox.Text = "Use Alternative Injection (C++ && ASM)";
             this.useAlternativeInjectionCheckBox.UseVisualStyleBackColor = true;
             this.useAlternativeInjectionCheckBox.CheckedChanged += new System.EventHandler(this.UseAlternativeInjectionCheckBox_CheckedChanged);
             // 
@@ -51,7 +52,7 @@ namespace Miljector
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.okButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
             this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.okButton.Location = new System.Drawing.Point(147, 76);
+            this.okButton.Location = new System.Drawing.Point(147, 101);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 2;
@@ -62,7 +63,7 @@ namespace Miljector
             // checkForUpdatesCheckBox
             // 
             this.checkForUpdatesCheckBox.AutoSize = true;
-            this.checkForUpdatesCheckBox.Location = new System.Drawing.Point(12, 35);
+            this.checkForUpdatesCheckBox.Location = new System.Drawing.Point(12, 58);
             this.checkForUpdatesCheckBox.Name = "checkForUpdatesCheckBox";
             this.checkForUpdatesCheckBox.Size = new System.Drawing.Size(118, 17);
             this.checkForUpdatesCheckBox.TabIndex = 3;
@@ -73,7 +74,7 @@ namespace Miljector
             // enableDiscordRPCStatusCheckBox
             // 
             this.enableDiscordRPCStatusCheckBox.AutoSize = true;
-            this.enableDiscordRPCStatusCheckBox.Location = new System.Drawing.Point(12, 58);
+            this.enableDiscordRPCStatusCheckBox.Location = new System.Drawing.Point(12, 81);
             this.enableDiscordRPCStatusCheckBox.Name = "enableDiscordRPCStatusCheckBox";
             this.enableDiscordRPCStatusCheckBox.Size = new System.Drawing.Size(153, 17);
             this.enableDiscordRPCStatusCheckBox.TabIndex = 4;
@@ -81,12 +82,24 @@ namespace Miljector
             this.enableDiscordRPCStatusCheckBox.UseVisualStyleBackColor = true;
             this.enableDiscordRPCStatusCheckBox.CheckedChanged += new System.EventHandler(this.EnableDiscordRPCStatusCheckBox_CheckedChanged);
             // 
+            // Gen2InjectionCheckBox
+            // 
+            this.Gen2InjectionCheckBox.AutoSize = true;
+            this.Gen2InjectionCheckBox.Location = new System.Drawing.Point(12, 12);
+            this.Gen2InjectionCheckBox.Name = "Gen2InjectionCheckBox";
+            this.Gen2InjectionCheckBox.Size = new System.Drawing.Size(188, 17);
+            this.Gen2InjectionCheckBox.TabIndex = 5;
+            this.Gen2InjectionCheckBox.Text = "Use Injection Gen2 (C# + WinAPI)";
+            this.Gen2InjectionCheckBox.UseVisualStyleBackColor = true;
+            this.Gen2InjectionCheckBox.CheckedChanged += new System.EventHandler(this.Gen2InjectionCheckBox_CheckedChanged);
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-            this.ClientSize = new System.Drawing.Size(234, 111);
+            this.ClientSize = new System.Drawing.Size(234, 136);
+            this.Controls.Add(this.Gen2InjectionCheckBox);
             this.Controls.Add(this.enableDiscordRPCStatusCheckBox);
             this.Controls.Add(this.checkForUpdatesCheckBox);
             this.Controls.Add(this.okButton);
@@ -111,5 +124,6 @@ namespace Miljector
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.CheckBox checkForUpdatesCheckBox;
         private System.Windows.Forms.CheckBox enableDiscordRPCStatusCheckBox;
+        private System.Windows.Forms.CheckBox Gen2InjectionCheckBox;
     }
 }

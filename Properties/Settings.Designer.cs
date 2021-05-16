@@ -58,5 +58,17 @@ namespace Miljector.Properties {
                 this["EnableDiscordRPC"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseGen2Injection {
+            get {
+                return ((bool)(this["UseGen2Injection"]));
+            }
+            set {
+                this["UseGen2Injection"] = value;
+            }
+        }
     }
 }
