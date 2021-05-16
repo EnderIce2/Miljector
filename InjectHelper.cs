@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using static Miljector.InjectHelper.NativeMethods;
 
@@ -343,7 +344,23 @@ namespace Miljector
                 /// </summary>
                 MemoryWrite = 0x80000000
             }
-
+            [Flags]
+            public enum ProcessAccessFlags : uint
+            {
+                All = 0x001F0FFF,
+                Terminate = 0x00000001,
+                CreateThread = 0x00000002,
+                VirtualMemoryOperation = 0x00000008,
+                VirtualMemoryRead = 0x00000010,
+                VirtualMemoryWrite = 0x00000020,
+                DuplicateHandle = 0x00000040,
+                CreateProcess = 0x000000080,
+                SetQuota = 0x00000100,
+                SetInformation = 0x00000200,
+                QueryInformation = 0x00000400,
+                QueryLimitedInformation = 0x00001000,
+                Synchronize = 0x00100000
+            }
             [StructLayout(LayoutKind.Sequential)]
             public struct IMAGE_DATA_DIRECTORY
             {
@@ -870,7 +887,12 @@ namespace Miljector
                 public UIntPtr UniqueProcessId;
                 public UIntPtr InheritedFromUniqueProcessId;
             }
-
+            [Flags]
+            public enum FreeType
+            {
+                Decommit = 0x4000,
+                Release = 0x8000,
+            }
             public enum NtStatus : uint
             {
                 // Success
@@ -1216,7 +1238,35 @@ namespace Miljector
 
                 MaximumNtStatus = 0xffffffff
             }
+            [Flags]
+            public enum AllocationType
+            {
+                Commit = 0x1000,
+                Reserve = 0x2000,
+                Decommit = 0x4000,
+                Release = 0x8000,
+                Reset = 0x80000,
+                Physical = 0x400000,
+                TopDown = 0x100000,
+                WriteWatch = 0x200000,
+                LargePages = 0x20000000
+            }
 
+            [Flags]
+            public enum MemoryProtection
+            {
+                Execute = 0x10,
+                ExecuteRead = 0x20,
+                ExecuteReadWrite = 0x40,
+                ExecuteWriteCopy = 0x80,
+                NoAccess = 0x01,
+                ReadOnly = 0x02,
+                ReadWrite = 0x04,
+                WriteCopy = 0x08,
+                GuardModifierflag = 0x100,
+                NoCacheModifierflag = 0x200,
+                WriteCombineModifierflag = 0x400
+            }
             public class Pointer<IBuffer> where IBuffer : struct
             {
                 private int? IStructSize;
@@ -1599,6 +1649,8 @@ namespace Miljector
 
             [DllImport("kernel32.dll", SetLastError = true)]
             internal static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, IntPtr dwSize, uint flAllocationType, uint flProtect);
+            [DllImport("kernel32.dll", SetLastError = true)]
+            internal static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, IntPtr dwSize, AllocationType flAllocationType, MemoryProtection flProtect);
 
             [DllImport("kernel32.dll", SetLastError = true)]
             internal static extern int WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] buffer, uint size, int lpNumberOfBytesWritten);
@@ -1613,7 +1665,10 @@ namespace Miljector
             [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
             [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool IsWow64Process([In] IntPtr process, [Out] out bool wow64Process);
-
+            [DllImport("kernel32.dll", SetLastError = true)]
+            public static extern uint WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
+            [DllImport("kernel32.dll", SetLastError = true)]
+            public static extern bool VirtualFreeEx(IntPtr hProcess, IntPtr lpAddress, int dwSize, FreeType dwFreeType);
             [DllImport("ntdll.dll")]
             internal static extern string Wine_get_version();
         }
@@ -1721,6 +1776,8 @@ namespace Miljector
         internal class Mapping
         {
             private Process process;
+            private IntPtr hProcess;
+            private bool AsyncAttach;
 
             public Mapping(Process process) => this.process = process;
 
@@ -1736,12 +1793,20 @@ namespace Miljector
                 try
                 {
                     handle = PinBuffer(buffer);
-                    OpenTarget();
+                    IntPtr _hProcess = OpenTarget();
+                    if (_hProcess == IntPtr.Zero)
+                    {
+                        throw new Exception("Failed to open handle.\n" + Marshal.GetLastWin32Error());
+                    }
+                    else
+                    {
+                        hProcess = _hProcess;
+                    }
                     result = LoadImageToMemory(handle.AddrOfPinnedObject());
                 }
                 catch (Exception)
                 {
-                    // todo: handle error
+                    // TODO: handle error
                 }
                 finally
                 {
@@ -1753,28 +1818,157 @@ namespace Miljector
 
             private void CloseTarget()
             {
-                throw new NotImplementedException();
+                if (hProcess != IntPtr.Zero)
+                {
+                    CloseHandle(hProcess);
+                    hProcess = IntPtr.Zero;
+                }
             }
 
             private void FreeHandle(GCHandle handle)
             {
-                throw new NotImplementedException();
+                if (handle.IsAllocated)
+                {
+                    handle.Free();
+                }
             }
 
-            private IntPtr LoadImageToMemory(IntPtr intPtr)
+            private IntPtr LoadImageToMemory(IntPtr baseAddress)
+            {
+                PIMAGE_NT_HEADERS32 ntHeader = GetNtHeader(baseAddress);
+                if (ntHeader != null && ntHeader.IBufferValue.FileHeader.NumberOfSections != 0)
+                {
+                    uint result1 = uint.MaxValue;
+                    uint result2 = 0;
+                    PIMAGE_SECTION_HEADER pimageSectionHeader = (PIMAGE_SECTION_HEADER)(ntHeader.IAddress + 24 + ntHeader.IBufferValue.FileHeader.SizeOfOptionalHeader);
+                    for (uint i_Index = 0; i_Index < ntHeader.IBufferValue.FileHeader.NumberOfSections; ++i_Index)
+                    {
+                        if (pimageSectionHeader[i_Index].VirtualSize != 0U)
+                        {
+                            if (pimageSectionHeader[i_Index].VirtualAddress < result1)
+                            {
+                                result1 = pimageSectionHeader[i_Index].VirtualAddress;
+                            }
+
+                            if (pimageSectionHeader[i_Index].VirtualAddress + pimageSectionHeader[i_Index].VirtualSize > result2)
+                            {
+                                result2 = pimageSectionHeader[i_Index].VirtualAddress + pimageSectionHeader[i_Index].VirtualSize;
+                            }
+                        }
+                    }
+                    uint size = result2 - result1;
+                    if (ntHeader.IBufferValue.OptionalHeader.ImageBase % 4096U != 0U || ntHeader.IBufferValue.OptionalHeader.DelayImportDescriptor.Size > 0U)
+                    {
+                        return IntPtr.Zero;
+                    }
+
+                    IntPtr result3 = RemoteAllocateMemory(size);
+                    if (result3 == IntPtr.Zero || !ProcessImportTable(baseAddress) || !ProcessDelayedImportTable(baseAddress, result3) || !ProcessRelocations(baseAddress, result3) || !ProcessSections(baseAddress, result3) || !ProcessTlsEntries(baseAddress, result3))
+                    {
+                        return IntPtr.Zero;
+                    }
+
+                    if (ntHeader.IBufferValue.OptionalHeader.AddressOfEntryPoint > 0U)
+                    {
+                        int result4 = result3.ToInt32() + (int)ntHeader.IBufferValue.OptionalHeader.AddressOfEntryPoint;
+                        if (!CallEntryPoint(result3, (uint)result4, AsyncAttach))
+                        {
+                            return IntPtr.Zero;
+                        }
+                    }
+                    return result3;
+                }
+                return IntPtr.Zero;
+            }
+
+            private bool CallEntryPoint(IntPtr baseAddress, uint entrypoint, bool asyncAttach)
+            {
+                // TODO: optimize list
+                List<byte> byteList = new List<byte>();
+                byteList.Add(104);
+                byteList.AddRange(BitConverter.GetBytes(baseAddress.ToInt32()));
+                byteList.Add(104);
+                byteList.AddRange(BitConverter.GetBytes(1));
+                byteList.Add(104);
+                byteList.AddRange(BitConverter.GetBytes(0));
+                byteList.Add(184);
+                byteList.AddRange(BitConverter.GetBytes(entrypoint));
+                byteList.Add(byte.MaxValue);
+                byteList.Add(208);
+                byteList.Add(51);
+                byteList.Add(192);
+                byteList.Add(194);
+                byteList.Add(4);
+                byteList.Add(0);
+                return ExecuteRemoteThreadBuffer(byteList.ToArray(), asyncAttach);
+            }
+
+            private bool ExecuteRemoteThreadBuffer(byte[] bufferThreadData, bool asyncAttach)
+            {
+                // TODO: do something with result code of WaitForSingleObject
+                IntPtr lpAddress = RemoteAllocateMemory((uint)bufferThreadData.Length);
+                if (lpAddress != IntPtr.Zero)
+                {
+                    int result = WriteProcessMemory(hProcess, lpAddress, bufferThreadData, (uint)bufferThreadData.Length, out _) ? 1 : 0;
+                    if (result != 0)
+                    {
+                        IntPtr hHandle = CreateRemoteThread(hProcess, IntPtr.Zero, (IntPtr)0U, lpAddress, IntPtr.Zero, 0U, IntPtr.Zero);
+                        if (!asyncAttach)
+                        {
+                            WaitForSingleObject(hHandle, 4000U);
+                            VirtualFreeEx(hProcess, lpAddress, 0, FreeType.Release);
+                            return result != 0;
+                        }
+                        new Thread(() =>
+                        {
+                            WaitForSingleObject(hHandle, 5000U);
+                            VirtualFreeEx(hProcess, lpAddress, 0, FreeType.Release);
+                        })
+                        {
+                            IsBackground = true
+                        }.Start();
+                        return result != 0;
+                    }
+                    return result != 0;
+                }
+                return false;
+            }
+
+            private bool ProcessTlsEntries(IntPtr baseAddress, IntPtr num3)
             {
                 throw new NotImplementedException();
             }
 
-            private void OpenTarget()
+            private bool ProcessSections(IntPtr baseAddress, IntPtr num3)
             {
                 throw new NotImplementedException();
             }
 
-            private GCHandle PinBuffer(byte[] buffer)
+            private bool ProcessRelocations(IntPtr baseAddress, IntPtr num3)
             {
                 throw new NotImplementedException();
             }
+
+            private bool ProcessDelayedImportTable(IntPtr baseAddress, IntPtr num3)
+            {
+                throw new NotImplementedException();
+            }
+
+            private bool ProcessImportTable(IntPtr baseAddress)
+            {
+                throw new NotImplementedException();
+            }
+
+            private IntPtr RemoteAllocateMemory(uint size) => VirtualAllocEx(hProcess, IntPtr.Zero, new IntPtr(size), AllocationType.Commit | AllocationType.Reserve, MemoryProtection.ExecuteReadWrite);
+
+            private PIMAGE_NT_HEADERS32 GetNtHeader(IntPtr baseAddress)
+            {
+                throw new NotImplementedException();
+            }
+
+            private IntPtr OpenTarget() => OpenProcess((uint)ProcessAccessFlags.All, 0, (uint)process.Id);
+
+            private GCHandle PinBuffer(byte[] buffer) => GCHandle.Alloc(buffer, GCHandleType.Pinned);
         }
 
         #endregion InjectionGen2
