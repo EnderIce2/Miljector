@@ -52,15 +52,9 @@ namespace Miljector
 
                 public Int32 e_lfanew;      // File address of new exe header
 
-                private string _e_magic
-                {
-                    get { return new string(e_magic); }
-                }
+                private string _e_magic => new string(e_magic);
 
-                public bool isValid
-                {
-                    get { return _e_magic == "MZ"; }
-                }
+                public bool isValid => _e_magic == "MZ";
             }
 
             public struct IMAGE_IMPORT_BY_NAME
@@ -103,10 +97,7 @@ namespace Miljector
                 [FieldOffset(36)]
                 public DataSectionFlags Characteristics;
 
-                public string Section
-                {
-                    get { return new string(Name); }
-                }
+                public string Section => new string(Name);
             }
 
             [StructLayout(LayoutKind.Explicit)]
@@ -344,6 +335,7 @@ namespace Miljector
                 /// </summary>
                 MemoryWrite = 0x80000000
             }
+
             [Flags]
             public enum ProcessAccessFlags : uint
             {
@@ -361,6 +353,7 @@ namespace Miljector
                 QueryLimitedInformation = 0x00001000,
                 Synchronize = 0x00100000
             }
+
             [StructLayout(LayoutKind.Sequential)]
             public struct IMAGE_DATA_DIRECTORY
             {
@@ -652,15 +645,9 @@ namespace Miljector
                 [FieldOffset(24)]
                 public IMAGE_OPTIONAL_HEADER32 OptionalHeader;
 
-                private string _Signature
-                {
-                    get { return new string(Signature); }
-                }
+                private string _Signature => new string(Signature);
 
-                public bool isValid
-                {
-                    get { return _Signature == "PE\0\0" && OptionalHeader.Magic == MagicType.IMAGE_NT_OPTIONAL_HDR32_MAGIC; }
-                }
+                public bool isValid => _Signature == "PE\0\0" && OptionalHeader.Magic == MagicType.IMAGE_NT_OPTIONAL_HDR32_MAGIC;
             }
 
             [StructLayout(LayoutKind.Explicit)]
@@ -819,15 +806,9 @@ namespace Miljector
                 [FieldOffset(24)]
                 public IMAGE_OPTIONAL_HEADER64 OptionalHeader;
 
-                private string _Signature
-                {
-                    get { return new string(Signature); }
-                }
+                private string _Signature => new string(Signature);
 
-                public bool isValid
-                {
-                    get { return _Signature == "PE\0\0" && OptionalHeader.Magic == MagicType.IMAGE_NT_OPTIONAL_HDR64_MAGIC; }
-                }
+                public bool isValid => _Signature == "PE\0\0" && OptionalHeader.Magic == MagicType.IMAGE_NT_OPTIONAL_HDR64_MAGIC;
             }
 
             public struct FILETIME
@@ -887,12 +868,14 @@ namespace Miljector
                 public UIntPtr UniqueProcessId;
                 public UIntPtr InheritedFromUniqueProcessId;
             }
+
             [Flags]
             public enum FreeType
             {
                 Decommit = 0x4000,
                 Release = 0x8000,
             }
+
             public enum NtStatus : uint
             {
                 // Success
@@ -1238,6 +1221,7 @@ namespace Miljector
 
                 MaximumNtStatus = 0xffffffff
             }
+
             [Flags]
             public enum AllocationType
             {
@@ -1267,6 +1251,7 @@ namespace Miljector
                 NoCacheModifierflag = 0x200,
                 WriteCombineModifierflag = 0x400
             }
+
             public class Pointer<IBuffer> where IBuffer : struct
             {
                 private int? IStructSize;
@@ -1290,23 +1275,47 @@ namespace Miljector
                     }
                 }
 
-                private static IBuffer GetStructure(IntPtr iAddressTemp) => (IBuffer)Marshal.PtrToStructure(iAddressTemp, typeof(IBuffer));
+                private static IBuffer GetStructure(IntPtr iAddressTemp)
+                {
+                    return (IBuffer)Marshal.PtrToStructure(iAddressTemp, typeof(IBuffer));
+                }
 
                 public IBuffer this[uint iIndex] => GetStructure(IAddress + ((int)iIndex * StructSize));
 
-                public static Pointer<IBuffer> operator +(Pointer<IBuffer> iIndex1, int iIndex2) => new Pointer<IBuffer>(iIndex1.IAddress + (iIndex2 * iIndex1.StructSize));
+                public static Pointer<IBuffer> operator +(Pointer<IBuffer> iIndex1, int iIndex2)
+                {
+                    return new Pointer<IBuffer>(iIndex1.IAddress + (iIndex2 * iIndex1.StructSize));
+                }
 
-                public static Pointer<IBuffer> operator ++(Pointer<IBuffer> iIncrement) => iIncrement + 1;
+                public static Pointer<IBuffer> operator ++(Pointer<IBuffer> iIncrement)
+                {
+                    return iIncrement + 1;
+                }
 
-                public static Pointer<IBuffer> operator -(Pointer<IBuffer> iIndex1, int iIndex2) => new Pointer<IBuffer>(iIndex1.IAddress - (iIndex2 * iIndex1.StructSize));
+                public static Pointer<IBuffer> operator -(Pointer<IBuffer> iIndex1, int iIndex2)
+                {
+                    return new Pointer<IBuffer>(iIndex1.IAddress - (iIndex2 * iIndex1.StructSize));
+                }
 
-                public static Pointer<IBuffer> operator --(Pointer<IBuffer> iIncrement) => iIncrement - 1;
+                public static Pointer<IBuffer> operator --(Pointer<IBuffer> iIncrement)
+                {
+                    return iIncrement - 1;
+                }
 
-                public static explicit operator Pointer<IBuffer>(IntPtr iPointer) => iPointer != IntPtr.Zero ? new Pointer<IBuffer>(iPointer) : null;
+                public static explicit operator Pointer<IBuffer>(IntPtr iPointer)
+                {
+                    return iPointer != IntPtr.Zero ? new Pointer<IBuffer>(iPointer) : null;
+                }
 
-                public static explicit operator IntPtr(Pointer<IBuffer> iPointer) => iPointer.IAddress;
+                public static explicit operator IntPtr(Pointer<IBuffer> iPointer)
+                {
+                    return iPointer.IAddress;
+                }
 
-                public Pointer(IntPtr iAddressTemp) => IAddress = iAddressTemp;
+                public Pointer(IntPtr iAddressTemp)
+                {
+                    IAddress = iAddressTemp;
+                }
 
                 public Pointer(object iValue, bool iShouldFreeHandle_tmp = true)
                 {
@@ -1352,11 +1361,20 @@ namespace Miljector
                 {
                 }
 
-                public static PBYTE operator +(PBYTE c1, int c2) => new PBYTE(c1.IAddress + (c2 * c1.StructSize));
+                public static PBYTE operator +(PBYTE c1, int c2)
+                {
+                    return new PBYTE(c1.IAddress + (c2 * c1.StructSize));
+                }
 
-                public static PBYTE operator ++(PBYTE a) => a + 1;
+                public static PBYTE operator ++(PBYTE a)
+                {
+                    return a + 1;
+                }
 
-                public static explicit operator PBYTE(IntPtr ptr) => ptr != IntPtr.Zero ? new PBYTE(ptr) : null;
+                public static explicit operator PBYTE(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PBYTE(ptr) : null;
+                }
             }
 
             public class PCHAR : Pointer<char>
@@ -1376,13 +1394,25 @@ namespace Miljector
                 {
                 }
 
-                public static PCHAR operator +(PCHAR c1, int c2) => new PCHAR(c1.IAddress + (c2 * c1.StructSize));
+                public static PCHAR operator +(PCHAR c1, int c2)
+                {
+                    return new PCHAR(c1.IAddress + (c2 * c1.StructSize));
+                }
 
-                public static PCHAR operator ++(PCHAR a) => a + 1;
+                public static PCHAR operator ++(PCHAR a)
+                {
+                    return a + 1;
+                }
 
-                public static explicit operator PCHAR(IntPtr ptr) => ptr != IntPtr.Zero ? new PCHAR(ptr) : null;
+                public static explicit operator PCHAR(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PCHAR(ptr) : null;
+                }
 
-                public override string ToString() => Marshal.PtrToStringAnsi(IAddress) ?? string.Empty;
+                public override string ToString()
+                {
+                    return Marshal.PtrToStringAnsi(IAddress) ?? string.Empty;
+                }
             }
 
             public class PDWORD : Pointer<uint>
@@ -1397,11 +1427,20 @@ namespace Miljector
                 {
                 }
 
-                public static PDWORD operator +(PDWORD c1, int c2) => new PDWORD(c1.IAddress + (c2 * c1.StructSize));
+                public static PDWORD operator +(PDWORD c1, int c2)
+                {
+                    return new PDWORD(c1.IAddress + (c2 * c1.StructSize));
+                }
 
-                public static PDWORD operator ++(PDWORD a) => a + 1;
+                public static PDWORD operator ++(PDWORD a)
+                {
+                    return a + 1;
+                }
 
-                public static explicit operator PDWORD(IntPtr ptr) => ptr != IntPtr.Zero ? new PDWORD(ptr) : null;
+                public static explicit operator PDWORD(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PDWORD(ptr) : null;
+                }
             }
 
             public class PWORD : Pointer<ushort>
@@ -1416,11 +1455,20 @@ namespace Miljector
                 {
                 }
 
-                public static PWORD operator +(PWORD c1, int c2) => new PWORD(c1.IAddress + (c2 * c1.StructSize));
+                public static PWORD operator +(PWORD c1, int c2)
+                {
+                    return new PWORD(c1.IAddress + (c2 * c1.StructSize));
+                }
 
-                public static PWORD operator ++(PWORD a) => a + 1;
+                public static PWORD operator ++(PWORD a)
+                {
+                    return a + 1;
+                }
 
-                public static explicit operator PWORD(IntPtr ptr) => ptr != IntPtr.Zero ? new PWORD(ptr) : null;
+                public static explicit operator PWORD(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PWORD(ptr) : null;
+                }
             }
 
             public class PSHORT : Pointer<short>
@@ -1435,11 +1483,20 @@ namespace Miljector
                 {
                 }
 
-                public static PSHORT operator +(PSHORT c1, int c2) => new PSHORT(c1.IAddress + (c2 * c1.StructSize));
+                public static PSHORT operator +(PSHORT c1, int c2)
+                {
+                    return new PSHORT(c1.IAddress + (c2 * c1.StructSize));
+                }
 
-                public static PSHORT operator ++(PSHORT a) => a + 1;
+                public static PSHORT operator ++(PSHORT a)
+                {
+                    return a + 1;
+                }
 
-                public static explicit operator PSHORT(IntPtr ptr) => ptr != IntPtr.Zero ? new PSHORT(ptr) : null;
+                public static explicit operator PSHORT(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PSHORT(ptr) : null;
+                }
             }
 
             public class PPROCESS_BASIC_INFORMATION : Pointer<PROCESS_BASIC_INFORMATION>
@@ -1454,7 +1511,10 @@ namespace Miljector
                 {
                 }
 
-                public static explicit operator PPROCESS_BASIC_INFORMATION(IntPtr ptr) => ptr != IntPtr.Zero ? new PPROCESS_BASIC_INFORMATION(ptr) : null;
+                public static explicit operator PPROCESS_BASIC_INFORMATION(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PPROCESS_BASIC_INFORMATION(ptr) : null;
+                }
             }
 
             public class PIMAGE_TLS_DIRECTORY32 : Pointer<IMAGE_TLS_DIRECTORY32>
@@ -1469,11 +1529,20 @@ namespace Miljector
                 {
                 }
 
-                public static PIMAGE_TLS_DIRECTORY32 operator +(PIMAGE_TLS_DIRECTORY32 c1, int c2) => new PIMAGE_TLS_DIRECTORY32(c1.IAddress + (c2 * c1.StructSize));
+                public static PIMAGE_TLS_DIRECTORY32 operator +(PIMAGE_TLS_DIRECTORY32 c1, int c2)
+                {
+                    return new PIMAGE_TLS_DIRECTORY32(c1.IAddress + (c2 * c1.StructSize));
+                }
 
-                public static PIMAGE_TLS_DIRECTORY32 operator ++(PIMAGE_TLS_DIRECTORY32 a) => a + 1;
+                public static PIMAGE_TLS_DIRECTORY32 operator ++(PIMAGE_TLS_DIRECTORY32 a)
+                {
+                    return a + 1;
+                }
 
-                public static explicit operator PIMAGE_TLS_DIRECTORY32(IntPtr ptr) => ptr != IntPtr.Zero ? new PIMAGE_TLS_DIRECTORY32(ptr) : null;
+                public static explicit operator PIMAGE_TLS_DIRECTORY32(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PIMAGE_TLS_DIRECTORY32(ptr) : null;
+                }
             }
 
             public class PIMAGE_THUNK_DATA : Pointer<IMAGE_THUNK_DATA>
@@ -1488,11 +1557,20 @@ namespace Miljector
                 {
                 }
 
-                public static PIMAGE_THUNK_DATA operator +(PIMAGE_THUNK_DATA c1, int c2) => new PIMAGE_THUNK_DATA(c1.IAddress + (c2 * c1.StructSize));
+                public static PIMAGE_THUNK_DATA operator +(PIMAGE_THUNK_DATA c1, int c2)
+                {
+                    return new PIMAGE_THUNK_DATA(c1.IAddress + (c2 * c1.StructSize));
+                }
 
-                public static PIMAGE_THUNK_DATA operator ++(PIMAGE_THUNK_DATA a) => a + 1;
+                public static PIMAGE_THUNK_DATA operator ++(PIMAGE_THUNK_DATA a)
+                {
+                    return a + 1;
+                }
 
-                public static explicit operator PIMAGE_THUNK_DATA(IntPtr ptr) => ptr != IntPtr.Zero ? new PIMAGE_THUNK_DATA(ptr) : null;
+                public static explicit operator PIMAGE_THUNK_DATA(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PIMAGE_THUNK_DATA(ptr) : null;
+                }
             }
 
             public class PIMAGE_SECTION_HEADER : Pointer<IMAGE_SECTION_HEADER>
@@ -1507,7 +1585,10 @@ namespace Miljector
                 {
                 }
 
-                public static explicit operator PIMAGE_SECTION_HEADER(IntPtr ptr) => ptr != IntPtr.Zero ? new PIMAGE_SECTION_HEADER(ptr) : null;
+                public static explicit operator PIMAGE_SECTION_HEADER(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PIMAGE_SECTION_HEADER(ptr) : null;
+                }
             }
 
             public class PIMAGE_NT_HEADERS32 : Pointer<IMAGE_NT_HEADERS32>
@@ -1522,7 +1603,10 @@ namespace Miljector
                 {
                 }
 
-                public static explicit operator PIMAGE_NT_HEADERS32(IntPtr ptr) => ptr != IntPtr.Zero ? new PIMAGE_NT_HEADERS32(ptr) : null;
+                public static explicit operator PIMAGE_NT_HEADERS32(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PIMAGE_NT_HEADERS32(ptr) : null;
+                }
             }
 
             public class PIMAGE_LOAD_CONFIG_DIRECTORY32 : Pointer<IMAGE_LOAD_CONFIG_DIRECTORY32>
@@ -1537,11 +1621,20 @@ namespace Miljector
                 {
                 }
 
-                public static PIMAGE_LOAD_CONFIG_DIRECTORY32 operator +(PIMAGE_LOAD_CONFIG_DIRECTORY32 c1, int c2) => new PIMAGE_LOAD_CONFIG_DIRECTORY32(c1.IAddress + (c2 * c1.StructSize));
+                public static PIMAGE_LOAD_CONFIG_DIRECTORY32 operator +(PIMAGE_LOAD_CONFIG_DIRECTORY32 c1, int c2)
+                {
+                    return new PIMAGE_LOAD_CONFIG_DIRECTORY32(c1.IAddress + (c2 * c1.StructSize));
+                }
 
-                public static PIMAGE_LOAD_CONFIG_DIRECTORY32 operator ++(PIMAGE_LOAD_CONFIG_DIRECTORY32 a) => a + 1;
+                public static PIMAGE_LOAD_CONFIG_DIRECTORY32 operator ++(PIMAGE_LOAD_CONFIG_DIRECTORY32 a)
+                {
+                    return a + 1;
+                }
 
-                public static explicit operator PIMAGE_LOAD_CONFIG_DIRECTORY32(IntPtr ptr) => ptr != IntPtr.Zero ? new PIMAGE_LOAD_CONFIG_DIRECTORY32(ptr) : null;
+                public static explicit operator PIMAGE_LOAD_CONFIG_DIRECTORY32(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PIMAGE_LOAD_CONFIG_DIRECTORY32(ptr) : null;
+                }
             }
 
             public class PIMAGE_IMPORT_DESCRIPTOR : Pointer<IMAGE_IMPORT_DESCRIPTOR>
@@ -1556,11 +1649,20 @@ namespace Miljector
                 {
                 }
 
-                public static PIMAGE_IMPORT_DESCRIPTOR operator +(PIMAGE_IMPORT_DESCRIPTOR c1, int c2) => new PIMAGE_IMPORT_DESCRIPTOR(c1.IAddress + (c2 * c1.StructSize));
+                public static PIMAGE_IMPORT_DESCRIPTOR operator +(PIMAGE_IMPORT_DESCRIPTOR c1, int c2)
+                {
+                    return new PIMAGE_IMPORT_DESCRIPTOR(c1.IAddress + (c2 * c1.StructSize));
+                }
 
-                public static PIMAGE_IMPORT_DESCRIPTOR operator ++(PIMAGE_IMPORT_DESCRIPTOR a) => a + 1;
+                public static PIMAGE_IMPORT_DESCRIPTOR operator ++(PIMAGE_IMPORT_DESCRIPTOR a)
+                {
+                    return a + 1;
+                }
 
-                public static explicit operator PIMAGE_IMPORT_DESCRIPTOR(IntPtr ptr) => ptr != IntPtr.Zero ? new PIMAGE_IMPORT_DESCRIPTOR(ptr) : null;
+                public static explicit operator PIMAGE_IMPORT_DESCRIPTOR(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PIMAGE_IMPORT_DESCRIPTOR(ptr) : null;
+                }
             }
 
             public class PIMAGE_IMPORT_BY_NAME : Pointer<IMAGE_IMPORT_BY_NAME>
@@ -1575,11 +1677,20 @@ namespace Miljector
                 {
                 }
 
-                public static PIMAGE_IMPORT_BY_NAME operator +(PIMAGE_IMPORT_BY_NAME c1, int c2) => new PIMAGE_IMPORT_BY_NAME(c1.IAddress + (c2 * c1.StructSize));
+                public static PIMAGE_IMPORT_BY_NAME operator +(PIMAGE_IMPORT_BY_NAME c1, int c2)
+                {
+                    return new PIMAGE_IMPORT_BY_NAME(c1.IAddress + (c2 * c1.StructSize));
+                }
 
-                public static PIMAGE_IMPORT_BY_NAME operator ++(PIMAGE_IMPORT_BY_NAME a) => a + 1;
+                public static PIMAGE_IMPORT_BY_NAME operator ++(PIMAGE_IMPORT_BY_NAME a)
+                {
+                    return a + 1;
+                }
 
-                public static explicit operator PIMAGE_IMPORT_BY_NAME(IntPtr ptr) => ptr != IntPtr.Zero ? new PIMAGE_IMPORT_BY_NAME(ptr) : null;
+                public static explicit operator PIMAGE_IMPORT_BY_NAME(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PIMAGE_IMPORT_BY_NAME(ptr) : null;
+                }
             }
 
             public class PIMAGE_EXPORT_DIRECTORY : Pointer<IMAGE_EXPORT_DIRECTORY>
@@ -1594,11 +1705,20 @@ namespace Miljector
                 {
                 }
 
-                public static PIMAGE_EXPORT_DIRECTORY operator +(PIMAGE_EXPORT_DIRECTORY c1, int c2) => new PIMAGE_EXPORT_DIRECTORY(c1.IAddress + (c2 * c1.StructSize));
+                public static PIMAGE_EXPORT_DIRECTORY operator +(PIMAGE_EXPORT_DIRECTORY c1, int c2)
+                {
+                    return new PIMAGE_EXPORT_DIRECTORY(c1.IAddress + (c2 * c1.StructSize));
+                }
 
-                public static PIMAGE_EXPORT_DIRECTORY operator ++(PIMAGE_EXPORT_DIRECTORY a) => a + 1;
+                public static PIMAGE_EXPORT_DIRECTORY operator ++(PIMAGE_EXPORT_DIRECTORY a)
+                {
+                    return a + 1;
+                }
 
-                public static explicit operator PIMAGE_EXPORT_DIRECTORY(IntPtr ptr) => ptr != IntPtr.Zero ? new PIMAGE_EXPORT_DIRECTORY(ptr) : null;
+                public static explicit operator PIMAGE_EXPORT_DIRECTORY(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PIMAGE_EXPORT_DIRECTORY(ptr) : null;
+                }
             }
 
             public class PIMAGE_DOS_HEADER : Pointer<IMAGE_DOS_HEADER>
@@ -1613,7 +1733,10 @@ namespace Miljector
                 {
                 }
 
-                public static explicit operator PIMAGE_DOS_HEADER(IntPtr ptr) => ptr != IntPtr.Zero ? new PIMAGE_DOS_HEADER(ptr) : null;
+                public static explicit operator PIMAGE_DOS_HEADER(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PIMAGE_DOS_HEADER(ptr) : null;
+                }
             }
 
             public class PIMAGE_BASE_RELOCATION : Pointer<IMAGE_BASE_RELOCATION>
@@ -1628,11 +1751,20 @@ namespace Miljector
                 {
                 }
 
-                public static PIMAGE_BASE_RELOCATION operator +(PIMAGE_BASE_RELOCATION c1, int c2) => new PIMAGE_BASE_RELOCATION(c1.IAddress + (c2 * c1.StructSize));
+                public static PIMAGE_BASE_RELOCATION operator +(PIMAGE_BASE_RELOCATION c1, int c2)
+                {
+                    return new PIMAGE_BASE_RELOCATION(c1.IAddress + (c2 * c1.StructSize));
+                }
 
-                public static PIMAGE_BASE_RELOCATION operator ++(PIMAGE_BASE_RELOCATION a) => a + 1;
+                public static PIMAGE_BASE_RELOCATION operator ++(PIMAGE_BASE_RELOCATION a)
+                {
+                    return a + 1;
+                }
 
-                public static explicit operator PIMAGE_BASE_RELOCATION(IntPtr ptr) => ptr != IntPtr.Zero ? new PIMAGE_BASE_RELOCATION(ptr) : null;
+                public static explicit operator PIMAGE_BASE_RELOCATION(IntPtr ptr)
+                {
+                    return ptr != IntPtr.Zero ? new PIMAGE_BASE_RELOCATION(ptr) : null;
+                }
             }
 
             [DllImport("kernel32.dll", SetLastError = true)]
@@ -1649,6 +1781,7 @@ namespace Miljector
 
             [DllImport("kernel32.dll", SetLastError = true)]
             internal static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, IntPtr dwSize, uint flAllocationType, uint flProtect);
+
             [DllImport("kernel32.dll", SetLastError = true)]
             internal static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, IntPtr dwSize, AllocationType flAllocationType, MemoryProtection flProtect);
 
@@ -1656,7 +1789,13 @@ namespace Miljector
             internal static extern int WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] buffer, uint size, int lpNumberOfBytesWritten);
 
             [DllImport("kernel32.dll", SetLastError = true)]
+            public static extern bool VirtualFree(IntPtr lpAddress, int dwSize, FreeType dwFreeType);
+
+            [DllImport("kernel32.dll", SetLastError = true)]
             internal static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] buffer, uint size, out UIntPtr lpNumberOfBytesWritten);
+
+            [DllImport("kernel32.dll", SetLastError = true)]
+            public static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, IntPtr lpBuffer, IntPtr nSize, out UIntPtr lpNumberOfBytesWritten);
 
             [DllImport("kernel32.dll", SetLastError = true)]
             internal static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttribute, IntPtr dwStackSize, IntPtr lpStartAddress,
@@ -1665,10 +1804,63 @@ namespace Miljector
             [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
             [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool IsWow64Process([In] IntPtr process, [Out] out bool wow64Process);
+
+            [DllImport("ntdll.dll", SetLastError = true)]
+            public static extern int NtQueryInformationProcess(IntPtr hProcess, int pic, IntPtr pbi, uint cb, out uint pSize);
+
             [DllImport("kernel32.dll", SetLastError = true)]
             public static extern uint WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
+
+            [DllImport("kernel32.dll", SetLastError = true)]
+            public static extern IntPtr VirtualAlloc(IntPtr lpAddress, UIntPtr dwSize, AllocationType flAllocationType, MemoryProtection flProtect);
+
+            [DllImport("kernel32.dll")]
+            public static extern bool VirtualProtectEx(IntPtr hProcess, IntPtr lpAddress, UIntPtr dwSize, uint flNewProtect, out uint lpflOldProtect);
+
             [DllImport("kernel32.dll", SetLastError = true)]
             public static extern bool VirtualFreeEx(IntPtr hProcess, IntPtr lpAddress, int dwSize, FreeType dwFreeType);
+
+            [DllImport("kernel32.dll", SetLastError = true)]
+            public static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, IntPtr lpBuffer, int dwSize, out UIntPtr lpNumberOfBytesRead);
+
+            public static bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, out UIntPtr lpNumberOfBytesRead)
+            {
+                GCHandle gcHandle = GCHandle.Alloc(lpBuffer, GCHandleType.Pinned);
+                int num = ReadProcessMemory(hProcess, lpBaseAddress, gcHandle.AddrOfPinnedObject(), lpBuffer.Length, out lpNumberOfBytesRead) ? 1 : 0;
+                gcHandle.Free();
+                return num != 0;
+            }
+
+            public static bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, out uint lpBuffer, out UIntPtr lpNumberOfBytesRead)
+            {
+                byte[] lpBuffer1 = new byte[4];
+                int num = ReadProcessMemory(hProcess, lpBaseAddress, lpBuffer1, out lpNumberOfBytesRead) ? 1 : 0;
+                lpBuffer = BitConverter.ToUInt32(lpBuffer1, 0);
+                return num != 0;
+            }
+
+            public static bool ReadProcessMemory<T>(IntPtr hProcess, IntPtr lpBaseAddress, out T lpBuffer, out UIntPtr lpNumberOfBytesRead) where T : struct
+            {
+                byte[] lpBuffer1 = new byte[Marshal.SizeOf(typeof(T))];
+                int num = ReadProcessMemory(hProcess, lpBaseAddress, lpBuffer1, out lpNumberOfBytesRead) ? 1 : 0;
+                GCHandle gcHandle = GCHandle.Alloc(lpBuffer1, GCHandleType.Pinned);
+                lpBuffer = Marshal.PtrToStructure<T>(gcHandle.AddrOfPinnedObject());
+                gcHandle.Free();
+                return num != 0;
+            }
+
+            [DllImport("kernel32.dll", SetLastError = true)]
+            public static extern IntPtr GetProcessHeap();
+
+            [DllImport("Dbghelp.dll")]
+            public static extern IntPtr ImageRvaToVa(IntPtr NtHeaders, IntPtr Base, UIntPtr Rva, [Optional] IntPtr LastRvaSection);
+
+            [DllImport("kernel32.dll")]
+            public static extern IntPtr HeapAlloc(IntPtr hHeap, uint dwFlags, UIntPtr dwBytes);
+
+            [DllImport("kernel32.dll", SetLastError = true)]
+            public static extern bool HeapFree(IntPtr hHeap, uint dwFlags, IntPtr lpMem);
+
             [DllImport("ntdll.dll")]
             internal static extern string Wine_get_version();
         }
@@ -1725,7 +1917,7 @@ namespace Miljector
 
         public static bool InjectLibrary(uint process, string dllPath)
         {
-            IntPtr hProcess = NativeMethods.OpenProcess(0x2 | 0x8 | 0x10 | 0x20 | 0x400, 1, process); // 1082, 0, id
+            IntPtr hProcess = OpenProcess(0x2 | 0x8 | 0x10 | 0x20 | 0x400, 1, process); // 1082, 0, id
             Debug.WriteLine("OpenProcess: " + hProcess);
             if (hProcess == IntPtr.Zero)
             {
@@ -1733,7 +1925,7 @@ namespace Miljector
                 error_code = hProcess;
                 return false;
             }
-            IntPtr lpLLAddress = NativeMethods.GetProcAddress(NativeMethods.GetModuleHandle("kernel32.dll"), "LoadLibraryA");
+            IntPtr lpLLAddress = GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
             Debug.WriteLine("GetProcAddress: " + lpLLAddress);
             if (lpLLAddress == IntPtr.Zero)
             {
@@ -1741,7 +1933,7 @@ namespace Miljector
                 error_code = lpLLAddress;
                 return false;
             }
-            IntPtr lpAddress = NativeMethods.VirtualAllocEx(hProcess, IntPtr.Zero, (IntPtr)dllPath.Length, 0x1000 | 0x2000, 0X40); // hProcess, IntPtr.Zero, (IntPtr)(uint)((dllPath.Length + 1) * Marshal.SizeOf(typeof(char))), 12288U, 4U);
+            IntPtr lpAddress = VirtualAllocEx(hProcess, IntPtr.Zero, (IntPtr)dllPath.Length, 0x1000 | 0x2000, 0X40); // hProcess, IntPtr.Zero, (IntPtr)(uint)((dllPath.Length + 1) * Marshal.SizeOf(typeof(char))), 12288U, 4U);
             Debug.WriteLine("VirtualAllocEx: " + lpAddress);
             if (lpAddress == IntPtr.Zero)
             {
@@ -1749,7 +1941,7 @@ namespace Miljector
                 error_code = lpAddress;
                 return false;
             }
-            int res1 = NativeMethods.WriteProcessMemory(hProcess, lpAddress, Encoding.ASCII.GetBytes(dllPath), (uint)(dllPath.Length + 1 * Marshal.SizeOf(typeof(char))), 0);
+            int res1 = WriteProcessMemory(hProcess, lpAddress, Encoding.ASCII.GetBytes(dllPath), (uint)(dllPath.Length + 1 * Marshal.SizeOf(typeof(char))), 0);
             Debug.WriteLine("WriteProcessMemory: " + res1);
             if (res1 == 0)
             {
@@ -1757,7 +1949,7 @@ namespace Miljector
                 error_code = (IntPtr)res1;
                 return false;
             }
-            IntPtr res2 = NativeMethods.CreateRemoteThread(hProcess, IntPtr.Zero, (IntPtr)0U, lpLLAddress, lpAddress, 0U, IntPtr.Zero);
+            IntPtr res2 = CreateRemoteThread(hProcess, IntPtr.Zero, (IntPtr)0U, lpLLAddress, lpAddress, 0U, IntPtr.Zero);
             Debug.WriteLine("CreateRemoteThread: " + res2);
             if (res2 == IntPtr.Zero)
             {
@@ -1765,7 +1957,7 @@ namespace Miljector
                 error_code = res2;
                 return false;
             }
-            NativeMethods.CloseHandle(hProcess);
+            CloseHandle(hProcess);
             return true;
         }
 
@@ -1778,6 +1970,7 @@ namespace Miljector
             private Process process;
             private IntPtr hProcess;
             private bool AsyncAttach;
+            public uint TimedOut = 5000;
 
             public Mapping(Process process) => this.process = process;
 
@@ -1814,6 +2007,30 @@ namespace Miljector
                     CloseTarget();
                 }
                 return result;
+            }
+
+            private bool InjectDependency(string dependency)
+            {
+                IntPtr procAddress = GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
+                if (procAddress != IntPtr.Zero)
+                {
+                    IntPtr result = RemoteAllocateMemory((uint)dependency.Length);
+                    if (result == IntPtr.Zero)
+                    {
+                        return false;
+                    }
+
+                    byte[] bytes = Encoding.ASCII.GetBytes(dependency);
+                    bool flag = WriteProcessMemory(hProcess, result, bytes, (uint)bytes.Length, out UIntPtr _);
+                    if (flag && WaitForSingleObject(CreateRemoteThread(hProcess, IntPtr.Zero, (IntPtr)0U, procAddress, result, 0U, IntPtr.Zero), TimedOut) != 0U)
+                    {
+                        return false;
+                    }
+
+                    VirtualFreeEx(hProcess, result, 0, FreeType.Release);
+                    return flag;
+                }
+                return false;
             }
 
             private void CloseTarget()
@@ -1863,7 +2080,7 @@ namespace Miljector
                     }
 
                     IntPtr result3 = RemoteAllocateMemory(size);
-                    if (result3 == IntPtr.Zero || !ProcessImportTable(baseAddress) || !ProcessDelayedImportTable(baseAddress, result3) || !ProcessRelocations(baseAddress, result3) || !ProcessSections(baseAddress, result3) || !ProcessTlsEntries(baseAddress, result3))
+                    if (result3 == IntPtr.Zero || !ProcessImportTable(baseAddress) || !ProcessDelayedImportTable(baseAddress) || !ProcessRelocations(baseAddress, result3) || !ProcessSections(baseAddress, result3) || !ProcessTlsEntries(baseAddress, result3))
                     {
                         return IntPtr.Zero;
                     }
@@ -1934,37 +2151,459 @@ namespace Miljector
                 return false;
             }
 
-            private bool ProcessTlsEntries(IntPtr baseAddress, IntPtr num3)
+            private bool ProcessTlsEntries(IntPtr baseAddress, IntPtr remoteAddress)
             {
-                throw new NotImplementedException();
+                PIMAGE_NT_HEADERS32 ntHeader = GetNtHeader(baseAddress);
+                if (ntHeader != null)
+                {
+                    if (ntHeader.IBufferValue.OptionalHeader.TLSTable.Size == 0U)
+                    {
+                        return true;
+                    }
+
+                    PIMAGE_TLS_DIRECTORY32 pointer = (PIMAGE_TLS_DIRECTORY32)RvaToPointer(ntHeader.IBufferValue.OptionalHeader.TLSTable.VirtualAddress, baseAddress);
+                    if (pointer == null || pointer.IBufferValue.AddressOfCallBacks == 0U)
+                    {
+                        return true;
+                    }
+
+                    byte[] lpBuffer = new byte[1020];
+                    if (!ReadProcessMemory(hProcess, new IntPtr(pointer.IBufferValue.AddressOfCallBacks), lpBuffer, out UIntPtr _))
+                    {
+                        return false;
+                    }
+                    PDWORD pdword = new PDWORD(lpBuffer);
+                    bool flag = true;
+                    for (uint i_Index = 0; pdword[i_Index] > 0U; ++i_Index)
+                    {
+                        flag = CallEntryPoint(remoteAddress, pdword[i_Index], false);
+                        if (!flag)
+                            break;
+                    }
+                    return flag;
+                }
+                return false;
             }
 
-            private bool ProcessSections(IntPtr baseAddress, IntPtr num3)
+            private IntPtr RvaToPointer(uint rva, IntPtr baseAddress) => GetNtHeader(baseAddress) != null ? ImageRvaToVa(GetNtHeader(baseAddress).IAddress, baseAddress, new UIntPtr(rva), IntPtr.Zero) : IntPtr.Zero;
+
+            private bool ProcessSections(IntPtr baseAddress, IntPtr remoteAddress)
             {
-                throw new NotImplementedException();
+                PIMAGE_NT_HEADERS32 ntHeader = GetNtHeader(baseAddress);
+                if (ntHeader != null)
+                {
+                    PIMAGE_SECTION_HEADER pimageSectionHeader = (PIMAGE_SECTION_HEADER)(ntHeader.IAddress + 24 + ntHeader.IBufferValue.FileHeader.SizeOfOptionalHeader);
+                    for (ushort index = 0; index < ntHeader.IBufferValue.FileHeader.NumberOfSections; ++index)
+                    {
+                        if (!CompareCharArray(".reloc".ToCharArray(), pimageSectionHeader[index].Name))
+                        {
+                            DataSectionFlags characteristics = pimageSectionHeader[index].Characteristics;
+                            if (characteristics.HasFlag(DataSectionFlags.MemoryRead) || characteristics.HasFlag(DataSectionFlags.MemoryWrite) || characteristics.HasFlag(DataSectionFlags.MemoryExecute))
+                            {
+                                uint sectionProtection = GetSectionProtection(pimageSectionHeader[index].Characteristics);
+                                ProcessSection(pimageSectionHeader[index].Name, baseAddress, remoteAddress, pimageSectionHeader[index].PointerToRawData, pimageSectionHeader[index].VirtualAddress, pimageSectionHeader[index].SizeOfRawData, pimageSectionHeader[index].VirtualSize, sectionProtection);
+                            }
+                        }
+                    }
+                    return true;
+                }
+                return false;
             }
 
-            private bool ProcessRelocations(IntPtr baseAddress, IntPtr num3)
+            private bool ProcessSection(char[] name, IntPtr baseAddress, IntPtr remoteAddress, ulong rawData, ulong virtualAddress, ulong rawSize, ulong virtualSize, uint protectFlag) => WriteProcessMemory(hProcess, new IntPtr(remoteAddress.ToInt64() + (long)virtualAddress), new IntPtr(baseAddress.ToInt64() + (long)rawData), new IntPtr((long)rawSize), out UIntPtr _) && VirtualProtectEx(hProcess, new IntPtr(remoteAddress.ToInt64() + (long)virtualAddress), new UIntPtr(virtualSize), protectFlag, out uint _);
+
+            private uint GetSectionProtection(DataSectionFlags characteristics)
             {
-                throw new NotImplementedException();
+                uint result = 0;
+                if (characteristics.HasFlag(DataSectionFlags.MemoryNotCached))
+                {
+                    result |= 512U;
+                }
+                return !characteristics.HasFlag(DataSectionFlags.MemoryExecute) ? (!characteristics.HasFlag(DataSectionFlags.MemoryRead) ? (!characteristics.HasFlag(DataSectionFlags.MemoryWrite) ? result | 1U : result | 8U) : (!characteristics.HasFlag(DataSectionFlags.MemoryWrite) ? result | 2U : result | 4U)) : (!characteristics.HasFlag(DataSectionFlags.MemoryRead) ? (!characteristics.HasFlag(DataSectionFlags.MemoryWrite) ? result | 16U : result | 128U) : (!characteristics.HasFlag(DataSectionFlags.MemoryWrite) ? result | 32U : result | 64U));
             }
 
-            private bool ProcessDelayedImportTable(IntPtr baseAddress, IntPtr num3)
+            public static bool CompareCharArray(char[] Char1, char[] Char2)
             {
-                throw new NotImplementedException();
+                for (int index = 0; index < Math.Min(Char1.Length, Char2.Length); ++index)
+                {
+                    if (Char1[index] != Char2[index])
+                    {
+                        return false;
+                    }
+
+                    if (Char1[index] == char.MinValue)
+                    {
+                        break;
+                    }
+                }
+                return true;
+            }
+
+            private bool ProcessRelocations(IntPtr baseAddress, IntPtr remoteAddress)
+            {
+                PIMAGE_NT_HEADERS32 ntHeader = GetNtHeader(baseAddress);
+                if (ntHeader != null)
+                {
+                    if ((ntHeader.IBufferValue.FileHeader.Characteristics & 1) > 0)
+                    {
+                        return true;
+                    }
+
+                    if (ntHeader.IBufferValue.OptionalHeader.BaseRelocationTable.Size > 0U)
+                    {
+                        PIMAGE_BASE_RELOCATION pimageBaseRelocation = (PIMAGE_BASE_RELOCATION)RvaToPointer(ntHeader.IBufferValue.OptionalHeader.BaseRelocationTable.VirtualAddress, baseAddress);
+                        if (pimageBaseRelocation != null)
+                        {
+                            PBYTE pbyte = (PBYTE)pimageBaseRelocation.IAddress + (int)ntHeader.IBufferValue.OptionalHeader.BaseRelocationTable.Size;
+                            while (true)
+                            {
+                                IntPtr Address1 = pimageBaseRelocation.IAddress;
+                                long address_int_1 = Address1.ToInt64();
+                                Address1 = pbyte.IAddress;
+                                long address_int_2 = Address1.ToInt64();
+                                if (address_int_1 < address_int_2)
+                                {
+                                    PBYTE pointer = (PBYTE)RvaToPointer(pimageBaseRelocation.IBufferValue.VirtualAddress, baseAddress);
+                                    uint result1 = pimageBaseRelocation.IBufferValue.SizeOfBlock - 8U >> 1;
+                                    PWORD Address2 = (PWORD)(pimageBaseRelocation + 1).IAddress;
+                                    uint result2 = 0;
+                                    while (result2 < result1)
+                                    {
+                                        ProcessRelocation((uint)((ulong)remoteAddress.ToInt32() - ntHeader.IBufferValue.OptionalHeader.ImageBase), Address2.IBufferValue, pointer);
+                                        ++result2;
+                                        ++Address2;
+                                    }
+                                    pimageBaseRelocation = (PIMAGE_BASE_RELOCATION)Address2.IAddress;
+                                }
+                                else
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            }
+
+            private bool ProcessRelocation(uint imageBaseDelta, ushort bufferValue, PBYTE relocationBase)
+            {
+                bool flag = true;
+                switch ((bufferValue >> 12) & 15)
+                {
+                    case 0:
+                    case 4:
+                        return flag;
+
+                    case 1:
+                        PSHORT iAddress1 = (PSHORT)(relocationBase + (bufferValue & 4095)).IAddress;
+                        Marshal.WriteInt16(iAddress1.IAddress, (short)((long)iAddress1.IBufferValue + (ushort)(imageBaseDelta >> 16 & ushort.MaxValue)));
+                        goto case 0;
+                    case 2:
+                        PSHORT iAddress2 = (PSHORT)(relocationBase + (bufferValue & 4095)).IAddress;
+                        Marshal.WriteInt16(iAddress2.IAddress, (short)((long)iAddress2.IBufferValue + (ushort)(imageBaseDelta & ushort.MaxValue)));
+                        goto case 0;
+                    case 3:
+                        PDWORD iAddress3 = (PDWORD)(relocationBase + (bufferValue & 4095)).IAddress;
+                        Marshal.WriteInt32(iAddress3.IAddress, (int)iAddress3.IBufferValue + (int)imageBaseDelta);
+                        goto case 0;
+                    case 10:
+                        PDWORD iAddress4 = (PDWORD)(relocationBase + (bufferValue & 4095)).IAddress;
+                        Marshal.WriteInt32(iAddress4.IAddress, (int)iAddress4.IBufferValue + (int)imageBaseDelta);
+                        goto case 0;
+                    default:
+                        flag = false;
+                        goto case 0;
+                }
+            }
+
+            private bool ProcessDelayedImportTable(IntPtr baseAddress)
+            {
+                PIMAGE_NT_HEADERS32 ntHeader = GetNtHeader(baseAddress);
+                if (ntHeader != null)
+                {
+                    if (ntHeader.IBufferValue.OptionalHeader.DelayImportDescriptor.Size <= 0U)
+                    {
+                        return true;
+                    }
+
+                    PIMAGE_IMPORT_DESCRIPTOR pointer1 = (PIMAGE_IMPORT_DESCRIPTOR)RvaToPointer(ntHeader.IBufferValue.OptionalHeader.DelayImportDescriptor.VirtualAddress, baseAddress);
+                    if (pointer1 == null)
+                    {
+                        return false;
+                    }
+
+                    while (pointer1.IBufferValue.Name > 0U)
+                    {
+                        PCHAR pointer2 = (PCHAR)RvaToPointer(pointer1.IBufferValue.Name, baseAddress);
+                        PIMAGE_THUNK_DATA pointer3;
+                        PIMAGE_THUNK_DATA pointer4;
+                        if (pointer2 != null)
+                        {
+                            IntPtr remoteModuleHandleA = GetRemoteModuleHandleA(pointer2.ToString());
+                            if (remoteModuleHandleA == IntPtr.Zero)
+                            {
+                                InjectDependency(pointer2.ToString());
+                                remoteModuleHandleA = GetRemoteModuleHandleA(pointer2.ToString());
+                                if (remoteModuleHandleA == IntPtr.Zero)
+                                    goto label_16;
+                            }
+                            if (pointer1.IBufferValue.OriginalFirstThunk > 0U)
+                            {
+                                pointer3 = (PIMAGE_THUNK_DATA)RvaToPointer(pointer1.IBufferValue.OriginalFirstThunk, baseAddress);
+                                pointer4 = (PIMAGE_THUNK_DATA)RvaToPointer(pointer1.IBufferValue.FirstThunk, baseAddress);
+                            }
+                            else
+                            {
+                                pointer3 = (PIMAGE_THUNK_DATA)RvaToPointer(pointer1.IBufferValue.FirstThunk, baseAddress);
+                                pointer4 = (PIMAGE_THUNK_DATA)RvaToPointer(pointer1.IBufferValue.FirstThunk, baseAddress);
+                            }
+                            while (pointer3.IBufferValue.AddressOfData > 0U)
+                            {
+                                IntPtr dependencyProcAddressA;
+                                if ((pointer3.IBufferValue.Ordinal & 2147483648U) > 0U)
+                                {
+                                    short num = (short)((int)pointer3.IBufferValue.Ordinal & ushort.MaxValue);
+                                    dependencyProcAddressA = GetDependencyProcAddressA(remoteModuleHandleA, new PCHAR(num));
+                                    if (dependencyProcAddressA == IntPtr.Zero)
+                                        return false;
+                                }
+                                else
+                                {
+                                    PCHAR procName = (PCHAR)((PIMAGE_IMPORT_BY_NAME)RvaToPointer(pointer4.IBufferValue.Ordinal, baseAddress)).IAddress + 2;
+                                    dependencyProcAddressA = GetDependencyProcAddressA(remoteModuleHandleA, procName);
+                                }
+                                Marshal.WriteInt32(pointer4.IAddress, dependencyProcAddressA.ToInt32());
+                                ++pointer3;
+                                ++pointer4;
+                            }
+                        }
+                    label_16:
+                        ++pointer1;
+                    }
+                    return true;
+                }
+                return false;
+            }
+
+            private IntPtr GetRemoteModuleHandleA(string v)
+            {
+                IntPtr num1 = IntPtr.Zero;
+                IntPtr processHeap = GetProcessHeap();
+                uint cb = (uint)Marshal.SizeOf(typeof(PROCESS_BASIC_INFORMATION));
+                PPROCESS_BASIC_INFORMATION basicInformation = (PPROCESS_BASIC_INFORMATION)HeapAlloc(processHeap, 8U, new UIntPtr(cb));
+                int num2 = NtQueryInformationProcess(hProcess, 0, basicInformation.IAddress, cb, out uint pSize);
+                if (num2 >= 0 && cb < pSize)
+                {
+                    if (basicInformation != null)
+                        HeapFree(processHeap, 0U, basicInformation.IAddress);
+                    basicInformation = (PPROCESS_BASIC_INFORMATION)HeapAlloc(processHeap, 8U, new UIntPtr(cb));
+                    if (basicInformation == null)
+                        return IntPtr.Zero;
+                    num2 = NtQueryInformationProcess(hProcess, 0, basicInformation.IAddress, pSize, out pSize);
+                }
+                uint lpBuffer1;
+                UIntPtr lpNumberOfBytesRead;
+                if (num2 >= 0 && basicInformation.IBufferValue.PebBaseAddress != IntPtr.Zero && ReadProcessMemory(hProcess, basicInformation.IBufferValue.PebBaseAddress + 12, out lpBuffer1, out lpNumberOfBytesRead))
+                {
+                    uint num3 = lpBuffer1 + 12U;
+                    uint num4 = lpBuffer1 + 12U;
+                    do
+                    {
+                        if (!ReadProcessMemory(hProcess, new IntPtr(num4), out uint lpBuffer2, out lpNumberOfBytesRead))
+                        {
+                            HeapFree(processHeap, 0U, basicInformation.IAddress);
+                        }
+
+                        num4 = lpBuffer2;
+                        ReadProcessMemory(hProcess, new IntPtr(lpBuffer2) + 44, out UNICODE_STRING lpBuffer3, out lpNumberOfBytesRead);
+                        string empty = string.Empty;
+                        if (lpBuffer3.Length > 0)
+                        {
+                            byte[] numArray = new byte[lpBuffer3.Length];
+                            ReadProcessMemory(hProcess, lpBuffer3.Buffer, numArray, out lpNumberOfBytesRead);
+                            empty = Encoding.Unicode.GetString(numArray);
+                        }
+                        ReadProcessMemory(hProcess, new IntPtr(lpBuffer2) + 24, out uint lpBuffer4, out lpNumberOfBytesRead);
+                        ReadProcessMemory(hProcess, new IntPtr(lpBuffer2) + 32, out uint lpBuffer5, out lpNumberOfBytesRead);
+                        if (lpBuffer4 != 0U && lpBuffer5 != 0U && string.Equals(empty, v, StringComparison.OrdinalIgnoreCase))
+                        {
+                            num1 = new IntPtr(lpBuffer4);
+                            break;
+                        }
+                    }
+                    while ((int)num3 != (int)num4);
+                }
+                if (basicInformation != null)
+                    HeapFree(processHeap, 0U, basicInformation.IAddress);
+                return num1;
+            }
+
+            public static string ToStringAnsi(byte[] Buffers)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                foreach (byte iBuffer in Buffers)
+                {
+                    if (iBuffer == 0)
+                        break;
+                    else
+                    {
+                        stringBuilder.Append((char)iBuffer);
+                    }
+                }
+                string str = stringBuilder.ToString();
+                stringBuilder.Clear();
+                return str;
+            }
+
+            private IntPtr AllocateMemory(uint size) => VirtualAlloc(IntPtr.Zero, new UIntPtr(size), AllocationType.Commit | AllocationType.Reserve, MemoryProtection.ExecuteReadWrite);
+
+            private IntPtr GetDependencyProcAddressA(IntPtr moduleBase, PCHAR procName)
+            {
+                IntPtr lpBaseAddress = IntPtr.Zero;
+                ReadProcessMemory(hProcess, moduleBase, out IMAGE_DOS_HEADER lpBuffer1, out UIntPtr lpNumberOfBytesRead);
+                if (lpBuffer1.isValid)
+                {
+                    ReadProcessMemory(hProcess, moduleBase + lpBuffer1.e_lfanew, out IMAGE_NT_HEADERS32 lpBuffer2, out lpNumberOfBytesRead);
+                    if (lpBuffer2.isValid)
+                    {
+                        uint virtualAddress = lpBuffer2.OptionalHeader.ExportTable.VirtualAddress;
+                        if (virtualAddress > 0U)
+                        {
+                            uint size = lpBuffer2.OptionalHeader.ExportTable.Size;
+                            PIMAGE_EXPORT_DIRECTORY pimageExportDirectory = (PIMAGE_EXPORT_DIRECTORY)AllocateMemory(size);
+                            ReadProcessMemory(hProcess, moduleBase + (int)virtualAddress, pimageExportDirectory.IAddress, (int)size, out lpNumberOfBytesRead);
+                            PWORD pword = (PWORD)(pimageExportDirectory.IAddress + (int)pimageExportDirectory.IBufferValue.AddressOfNameOrdinals - (int)virtualAddress);
+                            PDWORD pdword1 = (PDWORD)(pimageExportDirectory.IAddress + (int)pimageExportDirectory.IBufferValue.AddressOfNames - (int)virtualAddress);
+                            PDWORD pdword2 = (PDWORD)(pimageExportDirectory.IAddress + (int)pimageExportDirectory.IBufferValue.AddressOfFunctions - (int)virtualAddress);
+                            for (uint i_Index = 0; i_Index < pimageExportDirectory.IBufferValue.NumberOfFunctions; ++i_Index)
+                            {
+                                PCHAR pchar = null;
+                                ushort num;
+                                if (new PDWORD(procName.IAddress).IBufferValue <= ushort.MaxValue)
+                                {
+                                    num = (ushort)i_Index;
+                                }
+                                else
+                                {
+                                    if (new PDWORD(procName.IAddress).IBufferValue <= ushort.MaxValue || i_Index >= pimageExportDirectory.IBufferValue.NumberOfNames)
+                                        return IntPtr.Zero;
+                                    pchar = (PCHAR)new IntPtr(pdword1[i_Index] + pimageExportDirectory.IAddress.ToInt32() - virtualAddress);
+                                    num = pword[i_Index];
+                                }
+                                if (new PDWORD(procName.IAddress).IBufferValue <= ushort.MaxValue && (int)new PDWORD(procName.IAddress).IBufferValue == num + (int)pimageExportDirectory.IBufferValue.Base || new PDWORD(procName.IAddress).IBufferValue > ushort.MaxValue && pchar.ToString() == procName.ToString())
+                                {
+                                    lpBaseAddress = moduleBase + (int)pdword2[num];
+                                    if (lpBaseAddress.ToInt64() >= (moduleBase + (int)virtualAddress).ToInt64() && lpBaseAddress.ToInt64() <= (moduleBase + (int)virtualAddress + (int)size).ToInt64())
+                                    {
+                                        byte[] numArray = new byte[byte.MaxValue];
+                                        ReadProcessMemory(hProcess, lpBaseAddress, numArray, out lpNumberOfBytesRead);
+                                        string stringAnsi = ToStringAnsi(numArray);
+                                        string str1 = stringAnsi.Substring(0, stringAnsi.IndexOf(".")) + ".dll";
+                                        string str2 = stringAnsi.Substring(stringAnsi.IndexOf(".") + 1);
+                                        IntPtr remoteModuleHandleA = GetRemoteModuleHandleA(str1);
+                                        if (remoteModuleHandleA == IntPtr.Zero)
+                                            InjectDependency(str1);
+                                        lpBaseAddress = !str2.StartsWith("#") ? GetDependencyProcAddressA(remoteModuleHandleA, new PCHAR(str2)) : GetDependencyProcAddressA(remoteModuleHandleA, new PCHAR(str2) + 1);
+                                        break;
+                                    }
+                                    break;
+                                }
+                            }
+                            VirtualFree(pimageExportDirectory.IAddress, 0, FreeType.Release);
+                        }
+                        return lpBaseAddress;
+                    }
+                    else
+                    {
+                        return IntPtr.Zero;
+                    }
+                }
+                return IntPtr.Zero;
             }
 
             private bool ProcessImportTable(IntPtr baseAddress)
             {
-                throw new NotImplementedException();
+                PIMAGE_NT_HEADERS32 ntHeader = GetNtHeader(baseAddress);
+                if (ntHeader == null)
+                    return false;
+                if (ntHeader.IBufferValue.OptionalHeader.ImportTable.Size <= 0U)
+                    return true;
+                PIMAGE_IMPORT_DESCRIPTOR pointer1 = (PIMAGE_IMPORT_DESCRIPTOR)RvaToPointer(ntHeader.IBufferValue.OptionalHeader.ImportTable.VirtualAddress, baseAddress);
+                if (pointer1 == null)
+                    return false;
+                while (pointer1.IBufferValue.Name > 0U)
+                {
+                    PCHAR pchar = (PCHAR)RvaToPointer(pointer1.IBufferValue.Name, baseAddress);
+                    if (pchar != null)
+                    {
+                        if (pchar.ToString().Contains("-ms-win-crt-"))
+                        {
+                            pchar = new PCHAR("ucrtbase.dll");
+                        }
+
+                        IntPtr remoteModuleHandleA = GetRemoteModuleHandleA(pchar.ToString());
+                        if (remoteModuleHandleA == IntPtr.Zero)
+                        {
+                            InjectDependency(pchar.ToString());
+                            remoteModuleHandleA = GetRemoteModuleHandleA(pchar.ToString());
+                            if (remoteModuleHandleA == IntPtr.Zero)
+                                goto label_18;
+                        }
+                        PIMAGE_THUNK_DATA pointer2;
+                        PIMAGE_THUNK_DATA pointer3;
+                        if (pointer1.IBufferValue.OriginalFirstThunk > 0U)
+                        {
+                            pointer2 = (PIMAGE_THUNK_DATA)RvaToPointer(pointer1.IBufferValue.OriginalFirstThunk, baseAddress);
+                            pointer3 = (PIMAGE_THUNK_DATA)RvaToPointer(pointer1.IBufferValue.FirstThunk, baseAddress);
+                        }
+                        else
+                        {
+                            pointer2 = (PIMAGE_THUNK_DATA)RvaToPointer(pointer1.IBufferValue.FirstThunk, baseAddress);
+                            pointer3 = (PIMAGE_THUNK_DATA)RvaToPointer(pointer1.IBufferValue.FirstThunk, baseAddress);
+                        }
+                        while (pointer2.IBufferValue.AddressOfData > 0U)
+                        {
+                            IntPtr dependencyProcAddressA;
+                            if ((pointer2.IBufferValue.Ordinal & 2147483648U) > 0U)
+                            {
+                                short num = (short)((int)pointer2.IBufferValue.Ordinal & ushort.MaxValue);
+                                dependencyProcAddressA = GetDependencyProcAddressA(remoteModuleHandleA, new PCHAR(num));
+                                if (dependencyProcAddressA == IntPtr.Zero)
+                                    return false;
+                            }
+                            else
+                            {
+                                PCHAR procName = (PCHAR)((PIMAGE_IMPORT_BY_NAME)RvaToPointer(pointer3.IBufferValue.Ordinal, baseAddress)).IAddress + 2;
+                                dependencyProcAddressA = GetDependencyProcAddressA(remoteModuleHandleA, procName);
+                            }
+                            Marshal.WriteInt32(pointer3.IAddress, dependencyProcAddressA.ToInt32());
+                            ++pointer2;
+                            ++pointer3;
+                        }
+                    }
+                label_18:
+                    ++pointer1;
+                }
+                return true;
             }
 
             private IntPtr RemoteAllocateMemory(uint size) => VirtualAllocEx(hProcess, IntPtr.Zero, new IntPtr(size), AllocationType.Commit | AllocationType.Reserve, MemoryProtection.ExecuteReadWrite);
 
             private PIMAGE_NT_HEADERS32 GetNtHeader(IntPtr baseAddress)
             {
-                throw new NotImplementedException();
+                if (GetDosHeader(baseAddress) != null)
+                {
+                    PIMAGE_NT_HEADERS32 pimageNtHeaderS32 = (PIMAGE_NT_HEADERS32)(baseAddress + GetDosHeader(baseAddress).IBufferValue.e_lfanew);
+                    return pimageNtHeaderS32.IBufferValue.isValid ? pimageNtHeaderS32 : null;
+                }
+                return null;
             }
+
+            private PIMAGE_DOS_HEADER GetDosHeader(IntPtr baseAddress) => ((PIMAGE_DOS_HEADER)baseAddress).IBufferValue.isValid ? (PIMAGE_DOS_HEADER)baseAddress : null;
 
             private IntPtr OpenTarget() => OpenProcess((uint)ProcessAccessFlags.All, 0, (uint)process.Id);
 
@@ -1980,7 +2619,7 @@ namespace Miljector
             string wine_name;
             try
             {
-                wine_name = NativeMethods.Wine_get_version();
+                wine_name = Wine_get_version();
                 Console.WriteLine("---------------------------------------------------------------------------------------------");
                 Console.WriteLine($"Running under {wine_name}! Please report any problems that may occur while using it!");
                 Console.WriteLine("---------------------------------------------------------------------------------------------");
@@ -2006,7 +2645,7 @@ namespace Miljector
             {
                 if ((Environment.OSVersion.Version.Major > 5) || ((Environment.OSVersion.Version.Major == 5) && (Environment.OSVersion.Version.Minor >= 1)))
                 {
-                    return NativeMethods.IsWow64Process(process.Handle, out bool retVal) && retVal;
+                    return IsWow64Process(process.Handle, out bool retVal) && retVal;
                 }
             }
             return false;
@@ -2018,10 +2657,10 @@ namespace Miljector
 
         public static Bitmap ResizeImage(Image image, int width, int height)
         {
-            var destRect = new Rectangle(0, 0, width, height);
-            var destImage = new Bitmap(width, height);
+            Rectangle destRect = new Rectangle(0, 0, width, height);
+            Bitmap destImage = new Bitmap(width, height);
             destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
-            using (var graphics = Graphics.FromImage(destImage))
+            using (Graphics graphics = Graphics.FromImage(destImage))
             {
                 graphics.CompositingMode = CompositingMode.SourceCopy;
                 graphics.CompositingQuality = CompositingQuality.HighSpeed;
@@ -2029,7 +2668,7 @@ namespace Miljector
                 graphics.SmoothingMode = SmoothingMode.HighSpeed;
                 graphics.PixelOffsetMode = PixelOffsetMode.HighSpeed;
 
-                using (var wrapMode = new ImageAttributes())
+                using (ImageAttributes wrapMode = new ImageAttributes())
                 {
                     wrapMode.SetWrapMode(WrapMode.TileFlipXY);
                     graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
