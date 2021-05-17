@@ -34,6 +34,8 @@ namespace Miljector
 
         private void Gen2InjectionCheckBox_CheckedChanged(object sender, EventArgs e)
         {
+            if (useAlternativeInjectionCheckBox.Checked)
+                Gen2InjectionCheckBox.Checked = !useAlternativeInjectionCheckBox.Checked;
             if (Gen2InjectionCheckBox.Checked)
                 Settings.Default.UseGen2Injection = true;
             else
@@ -42,6 +44,8 @@ namespace Miljector
 
         private void UseAlternativeInjectionCheckBox_CheckedChanged(object sender, EventArgs e)
         {
+            if (Gen2InjectionCheckBox.Checked)
+                useAlternativeInjectionCheckBox.Checked = !Gen2InjectionCheckBox.Checked;
             if (useAlternativeInjectionCheckBox.Checked)
                 Settings.Default.UseAlternativeInjection = true;
             else

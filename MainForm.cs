@@ -191,6 +191,7 @@ namespace Miljector
                         catch (Exception ex)
                         {
                             infoLabel.Invoke(new Action(() => infoLabel.Text = ex.Message));
+                            MessageBox.Show(ex.Message + "\n------------------------------------------------------------------------\n" + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     else if (Settings.Default.UseAlternativeInjection)

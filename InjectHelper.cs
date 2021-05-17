@@ -1235,7 +1235,6 @@ namespace Miljector
                 WriteWatch = 0x200000,
                 LargePages = 0x20000000
             }
-
             [Flags]
             public enum MemoryProtection
             {
@@ -1251,7 +1250,6 @@ namespace Miljector
                 NoCacheModifierflag = 0x200,
                 WriteCombineModifierflag = 0x400
             }
-
             public class Pointer<IBuffer> where IBuffer : struct
             {
                 private int? IStructSize;
@@ -1348,7 +1346,6 @@ namespace Miljector
                     IGCHandle.Free();
                 }
             }
-
             public class PBYTE : Pointer<byte>
             {
                 public PBYTE(IntPtr address)
@@ -1376,7 +1373,6 @@ namespace Miljector
                     return ptr != IntPtr.Zero ? new PBYTE(ptr) : null;
                 }
             }
-
             public class PCHAR : Pointer<char>
             {
                 public PCHAR(IntPtr address)
@@ -1414,7 +1410,6 @@ namespace Miljector
                     return Marshal.PtrToStringAnsi(IAddress) ?? string.Empty;
                 }
             }
-
             public class PDWORD : Pointer<uint>
             {
                 public PDWORD(IntPtr address)
@@ -1442,7 +1437,6 @@ namespace Miljector
                     return ptr != IntPtr.Zero ? new PDWORD(ptr) : null;
                 }
             }
-
             public class PWORD : Pointer<ushort>
             {
                 public PWORD(IntPtr address)
@@ -1470,7 +1464,6 @@ namespace Miljector
                     return ptr != IntPtr.Zero ? new PWORD(ptr) : null;
                 }
             }
-
             public class PSHORT : Pointer<short>
             {
                 public PSHORT(IntPtr address)
@@ -1498,7 +1491,6 @@ namespace Miljector
                     return ptr != IntPtr.Zero ? new PSHORT(ptr) : null;
                 }
             }
-
             public class PPROCESS_BASIC_INFORMATION : Pointer<PROCESS_BASIC_INFORMATION>
             {
                 public PPROCESS_BASIC_INFORMATION(IntPtr address)
@@ -1516,7 +1508,6 @@ namespace Miljector
                     return ptr != IntPtr.Zero ? new PPROCESS_BASIC_INFORMATION(ptr) : null;
                 }
             }
-
             public class PIMAGE_TLS_DIRECTORY32 : Pointer<IMAGE_TLS_DIRECTORY32>
             {
                 public PIMAGE_TLS_DIRECTORY32(IntPtr address)
@@ -1544,7 +1535,6 @@ namespace Miljector
                     return ptr != IntPtr.Zero ? new PIMAGE_TLS_DIRECTORY32(ptr) : null;
                 }
             }
-
             public class PIMAGE_THUNK_DATA : Pointer<IMAGE_THUNK_DATA>
             {
                 public PIMAGE_THUNK_DATA(IntPtr address)
@@ -1572,7 +1562,6 @@ namespace Miljector
                     return ptr != IntPtr.Zero ? new PIMAGE_THUNK_DATA(ptr) : null;
                 }
             }
-
             public class PIMAGE_SECTION_HEADER : Pointer<IMAGE_SECTION_HEADER>
             {
                 public PIMAGE_SECTION_HEADER(IntPtr address)
@@ -1585,12 +1574,8 @@ namespace Miljector
                 {
                 }
 
-                public static explicit operator PIMAGE_SECTION_HEADER(IntPtr ptr)
-                {
-                    return ptr != IntPtr.Zero ? new PIMAGE_SECTION_HEADER(ptr) : null;
-                }
+                public static explicit operator PIMAGE_SECTION_HEADER(IntPtr ptr) => ptr != IntPtr.Zero ? new PIMAGE_SECTION_HEADER(ptr) : null;
             }
-
             public class PIMAGE_NT_HEADERS32 : Pointer<IMAGE_NT_HEADERS32>
             {
                 public PIMAGE_NT_HEADERS32(IntPtr address)
@@ -1603,12 +1588,22 @@ namespace Miljector
                 {
                 }
 
-                public static explicit operator PIMAGE_NT_HEADERS32(IntPtr ptr)
-                {
-                    return ptr != IntPtr.Zero ? new PIMAGE_NT_HEADERS32(ptr) : null;
-                }
+                public static explicit operator PIMAGE_NT_HEADERS32(IntPtr ptr) => ptr == IntPtr.Zero ? (PIMAGE_NT_HEADERS32)null : new PIMAGE_NT_HEADERS32(ptr);
             }
+            public class PIMAGE_NT_HEADERS64 : Pointer<IMAGE_NT_HEADERS64>
+            {
+                public PIMAGE_NT_HEADERS64(IntPtr address)
+                  : base(address)
+                {
+                }
 
+                public PIMAGE_NT_HEADERS64(object value)
+                  : base(value)
+                {
+                }
+
+                public static explicit operator PIMAGE_NT_HEADERS64(IntPtr ptr) => ptr == IntPtr.Zero ? (PIMAGE_NT_HEADERS64)null : new PIMAGE_NT_HEADERS64(ptr);
+            }
             public class PIMAGE_LOAD_CONFIG_DIRECTORY32 : Pointer<IMAGE_LOAD_CONFIG_DIRECTORY32>
             {
                 public PIMAGE_LOAD_CONFIG_DIRECTORY32(IntPtr address)
@@ -1636,7 +1631,6 @@ namespace Miljector
                     return ptr != IntPtr.Zero ? new PIMAGE_LOAD_CONFIG_DIRECTORY32(ptr) : null;
                 }
             }
-
             public class PIMAGE_IMPORT_DESCRIPTOR : Pointer<IMAGE_IMPORT_DESCRIPTOR>
             {
                 public PIMAGE_IMPORT_DESCRIPTOR(IntPtr address)
@@ -1664,7 +1658,6 @@ namespace Miljector
                     return ptr != IntPtr.Zero ? new PIMAGE_IMPORT_DESCRIPTOR(ptr) : null;
                 }
             }
-
             public class PIMAGE_IMPORT_BY_NAME : Pointer<IMAGE_IMPORT_BY_NAME>
             {
                 public PIMAGE_IMPORT_BY_NAME(IntPtr address)
@@ -1692,7 +1685,6 @@ namespace Miljector
                     return ptr != IntPtr.Zero ? new PIMAGE_IMPORT_BY_NAME(ptr) : null;
                 }
             }
-
             public class PIMAGE_EXPORT_DIRECTORY : Pointer<IMAGE_EXPORT_DIRECTORY>
             {
                 public PIMAGE_EXPORT_DIRECTORY(IntPtr address)
@@ -1720,7 +1712,6 @@ namespace Miljector
                     return ptr != IntPtr.Zero ? new PIMAGE_EXPORT_DIRECTORY(ptr) : null;
                 }
             }
-
             public class PIMAGE_DOS_HEADER : Pointer<IMAGE_DOS_HEADER>
             {
                 public PIMAGE_DOS_HEADER(IntPtr address)
@@ -1738,7 +1729,6 @@ namespace Miljector
                     return ptr != IntPtr.Zero ? new PIMAGE_DOS_HEADER(ptr) : null;
                 }
             }
-
             public class PIMAGE_BASE_RELOCATION : Pointer<IMAGE_BASE_RELOCATION>
             {
                 public PIMAGE_BASE_RELOCATION(IntPtr address)
@@ -1996,12 +1986,11 @@ namespace Miljector
                         hProcess = _hProcess;
                     }
                     result = LoadImageToMemory(handle.AddrOfPinnedObject());
-                }
-                catch (Exception ex)
+                }/*
+                catch (Exception)
                 {
-                    throw new Exception("Inject error: " + ex.Message);
                     // TODO: handle error
-                }
+                } */
                 finally
                 {
                     FreeHandle(handle);
