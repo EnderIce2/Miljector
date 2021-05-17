@@ -1997,8 +1997,9 @@ namespace Miljector
                     }
                     result = LoadImageToMemory(handle.AddrOfPinnedObject());
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    throw new Exception("Inject error: " + ex.Message);
                     // TODO: handle error
                 }
                 finally

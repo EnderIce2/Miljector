@@ -186,12 +186,12 @@ namespace Miljector
                         try
                         {
                             new Mapping((Process.GetProcessesByName(processname) as IEnumerable<Process>).FirstOrDefault()).Inject(File.ReadAllBytes(dllpath));
+                            infoLabel.Invoke(new Action(() => infoLabel.Text = "Injected"));
                         }
                         catch (Exception ex)
                         {
                             infoLabel.Invoke(new Action(() => infoLabel.Text = ex.Message));
                         }
-                        infoLabel.Invoke(new Action(() => infoLabel.Text = "Injected"));
                     }
                     else if (Settings.Default.UseAlternativeInjection)
                     {
